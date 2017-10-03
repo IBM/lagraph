@@ -1,0 +1,72 @@
+# use glob syntax.
+syntax: glob
+*.ser
+*.class
+*.pyc
+*~
+*.bak
+#*.off
+*.old
+
+# for mac
+.DS_Store
+
+# :bh:
+# eclipse conf file
+# .settings
+# .classpath
+# .project
+# .manager
+# .scala_dependencies
+
+# idea
+.idea
+*.iml
+
+# building
+target
+build
+null
+tmp*
+temp*
+dist
+test-output
+build.log
+
+# other scm
+.svn
+.CVS
+.hg*
+
+# switch to regexp syntax.
+#  syntax: regexp
+#  ^\.pc/
+
+#target-like output not in target directory
+build.log
+/.cache*
+/*.log
+*.data
+
+# templates
+# set_spark_env.sh
+/my-etc/
+/.settings/
+/.classpath
+/.project
+/Hpi9Bf$.launch
+#####
+
+# Documentation artifacts
+docs/_site
+# docs/api
+docs/*.html
+docs/.DS_Store
+docs/Gemfile.lock
+
+/bin/
+/.pydevproject
+
+# Spark
+**/metastore_db
+derby.log
