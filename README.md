@@ -6,7 +6,7 @@ License ...
 
 # LAGraph
 
-**Documentation:** [LAGraph Documentation](https://pages.github.ibm.com/hornwp/lagraph/)<br/>
+**Documentation:** [LAGraph Documentation](https://ibm.github.io/lagraph/)<br/>
 **Mailing List:** [Dev Mailing List](TBD)<br/>
 **Build Status:** [![Build Status](https://sparktc.ibmcloud.com/jenkins/job/LAGraph-DailyTest/badge/icon)](https://sparktc.ibmcloud.com/jenkins/job/LAGraph-DailyTest)<br/>
 **Issue Tracker:** [JIRA](TBD)<br/>
@@ -33,7 +33,7 @@ are focused on expanding the list of supported algorithms.
 
 For a first pass, instead of performing a full Spark install, you
 might consider working through the
-[LAGraph Quick Start (using Zeppelin)](https://pages.github.ibm.com/hornwp/lagraph/#quick-start-using-zeppelin).
+[LAGraph Quick Start (using Zeppelin)](https://ibm.github.io/lagraph/#quick-start-using-zeppelin).
 
 Before you get started on LAGraph, make sure that your environment is set up and ready to go.
 
@@ -79,4 +79,4 @@ Before you get started on LAGraph, make sure that your environment is set up and
 ## Next Steps!
 
 To get started, please consult the
-[LAGraph Documentation](https://pages.github.ibm.com/hornwp/lagraph/) website on GitHub.
+[LAGraph Documentation](https://ibm.github.io/lagraph/) website on GitHub.

@@ -39,3 +39,15 @@ imported into a standard development environment such as the
 To generate project metadata for eclipse, run:
 
     sbt eclipse
+
+For eclipse, if necessary, select the appropriate Scala compiler, e.g.,
+
+    right_click_on_project -> properties -> Scala Compiler -> Scala Installation
+
+to
+
+    Latest 2.11 bundle (dynamic)
+
+or
+
+    Fixed Scala Installation 2.11.x (built-in)

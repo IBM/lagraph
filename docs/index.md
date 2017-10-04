@@ -59,7 +59,7 @@ these execution issues should affect the interface.
 [//]: 1. **Unit test**: coverage needs improvement
 
 
-[//]: The [**LAGraph GitHub README**](https://github.ibm.com/hornwp/lagraph) describes
+[//]: The [**LAGraph GitHub README**](https://github.com/ibm/lagraph) describes
 [//]: building, testing, and running LAGraph. Please read [**Contributing to LAGraph**](contributing-to-lagraph)
 [//]: to find out how to help improve LAGraph.
 
