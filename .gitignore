@@ -28,7 +28,6 @@ target
 build
 null
 tmp*
-temp*
 dist
 test-output
 build.log
@@ -60,7 +59,6 @@ build.log
 # Documentation artifacts
 docs/_site
 # docs/api
-docs/*.html
 docs/.DS_Store
 docs/Gemfile.lock
 
