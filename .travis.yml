@@ -1,0 +1,7 @@
+language: scala
+scala:
+  - 2.11.11
+notifications:
+  email:
+    recipients:
+      - hornwp@us.ibm.com

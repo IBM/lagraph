@@ -29,32 +29,32 @@ performance by an order of magnitude when compared to traditional
 (e.g., Hadoop-based) approaches.  To address Graph problems, Spark
 offers the [GraphX module](http://spark.apache.org/graphx/). In
 contrast to LAGraphs's linear algebra-based techniques, GraphX takes
-vertex-centric approach based on Pregel
+a vertex-centric approach based on Pregel
 [\[Malewicz2010Pregel\]](#references). The
 two alternatives differ significantly in both the formulation of
 algorithms and the performance characteristics of the
 implementations.
 
-On this page provide a brief introduction to the algebraic approach
+On this page we provide a brief introduction to the algebraic approach
 for analyzing graphs for those with a (more traditional)
 vertex-centric background.
 
 # Two approaches: Vertex-centric vs Algebraic
 
 Both the vertex-centric and the algebraic approach
-have been extensively studied in the literature. However the
+have been extensively studied in the literature. However, the
 vertex-centric approach is more commonly used in practice. Let's start
 by taking a closer look at this approach.
 
 ## Vertex-centric approach
 
-Look up your favorite graph algorithm in a introductory text book and
+Look up your favorite graph algorithm in an introductory text book and
 most likely you'll find a description that is vertex-centric and
-written in imperative pseudocode.  Its vertex-centric in the the sense
+written in imperative pseudocode.  Its vertex-centric in the sense
 that the primary data structure is an adjacency list implemented
 either with a linked list or an array.  As an example, let's look at
 the
-[wikipedia description for Bellman Ford algorithm](https://en.wikipedia.org/wiki/Bellman%E2%80%93Ford_algorithm)
+[wikipedia description for the Bellman Ford algorithm](https://en.wikipedia.org/wiki/Bellman%E2%80%93Ford_algorithm)
 to compute the shortest paths from a single source vertex to all of
 the other vertices in a weighted, directed graph. This is the
 so-called *Single Source Shortest Path* (SSSP) problem.
@@ -136,9 +136,9 @@ approach?  [[Kepner2011Graphs]](#references) gives three reasons:
     distributed environment one must partition the graph into
     subgraphs. The vertex-centric approach is then used for each
     subgraph and subgraph interactions are handled with additional
-    logic using using message passing. Pregel is an example of this
+    logic using message passing. Pregel is an example of this
     approach. And, indeed, the current, core Graph library in Spark,
-    GraphX is based on Pregel. The approach is still intuitive but an
+    GraphX, is based on Pregel. The approach is still intuitive but an
     additional complexity of dealing with propagated information must
     be accommodated in the algorithm. Also, each subgraph, by
     construct, is very localized and the propagation of information
@@ -151,8 +151,8 @@ approach?  [[Kepner2011Graphs]](#references) gives three reasons:
 
     For many graph algorithms, the numerically-intensive work occurs
     in (potentially distributed) low-level sparse matrix operations
-    that lend can be optimized. The details of these operations are
-    hidden from users of the LAGraph API. Since they are independent
+    that can be optimized. The details of these operations are
+    hidden from the users of the LAGraph API. Since they are independent
     of interface, the low-level implementation can be optimized for
     specific architectures / systems to provide performance benefits
     without requiring any changes to the higher-level algorithm.
@@ -172,7 +172,7 @@ matrix $A$, called the *adjacency* matrix, with the property $A(i,j) =
 1$ if there is an edge $e_{ij}$ from vertex $v_i$ to vertex $v_j$ and
 is zero otherwise.
 
-For the algebraic approach the intuitions are a little different, the
+For the algebraic approach the intuitions are a little different. The
 basic intuitive operation of finding successors by performing an edge
 traversal in the vertex-centric world becomes a matrix multiplication
 in the algebraic world.  Here is a simple example that demonstrates
@@ -185,7 +185,7 @@ In this example, to find the set of successors using the
 vertex-centric approach, we would just directly use the adjacency
 lists for each of the source vertices, red vertices: $\lbrace v_0$,
 $v_1 \rbrace$, to obtain successor vertices, green vertices: $\lbrace
-v_0$, $v_2$ $v_4 \rbrace$.  If we wanted to keep track of how many
+v_0$, $v_2$ $v_4 \rbrace$.  If we want to keep track of how many
 times each vertex was visited we could modify the data structure
 maintaining the successor vertices to contain a pair where the first
 element of the pair would now represent the vertex and the second
@@ -240,7 +240,6 @@ modifications to the vertex-centric approach would be simple, instead
 of tracking the number of visits in the second element of the pair we
 could just store a Boolean indicating whether or not the vertex has
 been visited.
-
 For the matrix approach, instead of using conventional scalar addition
 and scalar multiplication we could interpret scalar addition as a
 logical "or", scalar multiplication as a logical "and", $0$ as "false"
@@ -259,8 +258,8 @@ multiplication play in matrix multiplication.
 Conventionally, at least in the context of
 [linear algebra](https://en.wikipedia.org/wiki/Linear_algebra), matrix
 multiplication is performed using
-[fields](https://en.wikipedia.org/wiki/Field_(mathematics)) usually
-the [real numbers](https://en.wikipedia.org/wiki/Real_number).  Fields
+[fields](https://en.wikipedia.org/wiki/Field_(mathematics)) (frequently
+the [real numbers](https://en.wikipedia.org/wiki/Real_number)).  Fields
 support addition and multiplication operations with axioms for
 associativity, commutativity, and distributivity.  Also, fields have
 axioms for additive inverses and multiplicative inverses that, as it

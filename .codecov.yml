@@ -1,0 +1,3 @@
+coverage:
+  ignore: #things we ignore
+    - "src/test/.*"
