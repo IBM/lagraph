@@ -16,6 +16,23 @@ scalaVersion := {
   }
 }
 
+// See https://github.com/scala/scala/pull/3799
+coverageHighlighting := {
+  if (sparkVersion.value >= "2.0.0") {
+    true
+  } else {
+    false
+  }
+}
+
+crossScalaVersions := {
+  if (sparkVersion.value >= "2.3.0") {
+    Seq("2.11.11")
+  } else {
+    Seq("2.10.6", "2.11.11")
+  }
+}
+
 javacOptions ++= {
     if (sparkVersion.value >= "2.1.1") {
       Seq("-source", "1.8", "-target", "1.8")
@@ -33,11 +50,6 @@ sparkComponents := Seq("core")
 parallelExecution in Test := false
 fork := true
 
-coverageHighlighting := {
-  if (scalaBinaryVersion.value == "2.10") false
-  else true
-}
-
 javaOptions ++= Seq("-Xms2G", "-Xmx2G", "-XX:MaxPermSize=2048M", "-XX:+CMSClassUnloadingEnabled")
 
 
@@ -50,7 +62,7 @@ libraryDependencies += "org.scalatest" % "scalatest_2.11" % "3.0.0" % "test"
 scalacOptions ++= Seq("-deprecation", "-unchecked")
 
 pomIncludeRepository := { x => false }
-// ^^^^^
+
 // publish settings
 publishTo := {
   val nexus = "https://oss.sonatype.org/"
@@ -87,11 +99,9 @@ useGpg := true
 
 
 // ******
-// Display full-length stacktraces from ScalaTest:
-testOptions in Test += Tests.Argument("-oF")
-// release settings
-releaseCrossBuild := true
-crossScalaVersions := Seq("2.10.6", "2.11.8")
-// xxxx
+// lagraph specific
+
 // scala doc
 scalacOptions in (Compile, doc) := List("-skip-packages",  "com.ibm.lagraph.impl") 
+// Display full-length stacktraces from ScalaTest:
+testOptions in Test += Tests.Argument("-oF")
