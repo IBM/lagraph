@@ -5,3 +5,4 @@ notifications:
   email:
     recipients:
       - hornwp@us.ibm.com
+      - yuh@us.ibm.com
