@@ -1,12 +1,12 @@
 organization := "com.github.ibm"
 
-name := "lagraph"
+name := "lagraph-core"
 
 publishMavenStyle := true
 
 version := "0.1.0-SNAPSHOT"
 
-sparkVersion := "2.1.0"
+sparkVersion := "2.2.0"
 
 scalaVersion := {
   if (sparkVersion.value >= "2.0.0") {
