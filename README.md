@@ -4,10 +4,8 @@ License ...
 {% endcomment %}
 -->
 
-[![buildstatus](https://travis-ci.org/ibm/lagraph.svg?branch=master)](https://ibm/lagraph/spark-testing-base)
--<!--
-[![codecov.io](http://codecov.io/github/ibm/lagraph/coverage.svg?branch=master)](http://codecov.io/github/ibm/lagraph?branch=master)
--->
+[![buildstatus](https://travis-ci.org/IBM/lagraph.svg?branch=master)](https://travis-ci.org/IBM/lagraph)
+[![codecov.io](http://codecov.io/github/IBM/lagraph/coverage.svg?branch=master)](http://codecov.io/github/IBM/lagraph?branch=master)
 
 # LAGraph
 
