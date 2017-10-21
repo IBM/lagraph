@@ -17,6 +17,7 @@
  * under the License.
  */
 package com.ibm.lagraph
+// scalastyle:off println
 
 import scala.annotation.tailrec
 
@@ -544,3 +545,4 @@ object Fundamental {
 			Fundamental.FloydWarshall(sc)
 	}
 }
+// scalastyle:on println

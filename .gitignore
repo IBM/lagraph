@@ -53,6 +53,7 @@ build.log
 /.settings/
 /.classpath
 /.project
+/.scalastyle
 /Hpi9Bf$.launch
 #####
 
