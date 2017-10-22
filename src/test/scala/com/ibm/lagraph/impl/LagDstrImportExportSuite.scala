@@ -32,7 +32,8 @@ class LagDstrImportExportSuite extends FunSuite with Matchers with SharedSparkCo
   // TODO activate when INT vs LONG problem is fixed
   val denseGraphSizes = List(1 << 4, 1 << 5)
   //  val sparseGraphSizes = List(1 << 16, 1 << 17, 1 << 29, 1 << 30)
-  val sparseGraphSizes = List(1 << 16, 1 << 17, 1 << 26, 1 << 27)
+  //  val sparseGraphSizes = List(1 << 16, 1 << 17, 1 << 26, 1 << 27)
+  val sparseGraphSizes = List(1 << 16, 1 << 17) // reduce to meet travis mem issues
   val nblocks = List(1 << 0, 1 << 1, 1 << 2, 1 << 3)
   // ********
   test("LagDstrContext.mFromMap Empty") {
