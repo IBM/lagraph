@@ -1,6 +1,26 @@
+# Use container-based infrastructure
+sudo: false
+
 language: scala
+
+# dist: precise
+
+cache:
+  directories:
+    - $HOME/.ivy2
+    - $HOME/.sbt/launchers
+
+jdk:
+  - oraclejdk8
+
 scala:
   - 2.11.11
+
+script:
+  - ./sbt/sbt scalastyle
+  - ./sbt/sbt clean coverage test coverageReport
+  - bash <(curl -s https://codecov.io/bash) -cF scala
+
 notifications:
   email:
     recipients:
