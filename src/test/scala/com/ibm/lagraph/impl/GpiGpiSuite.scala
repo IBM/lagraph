@@ -6,9 +6,9 @@
  * to you under the Apache License, Version 2.0 (the
  * "License"); you may not use this file except in compliance
  * with the License.  You may obtain a copy of the License at
- * 
+ *
  *   http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing,
  * software distributed under the License is distributed on an
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
@@ -114,18 +114,21 @@ class GpiGpiSuite extends FunSuite with Matchers {
     val mv = Vector.tabulate(3, 3)((r, c) => c * 3 + r)
     val m = GpiSparseRowMatrix.fromVector(mv, 0)
     val v = GpiAdaptiveVector.fromSeq(Range(0, 3).toVector, 0)
-    def f = (x: Int, y: Int) => x + y
-    def g = (x: Int, y: Int) => x * y
+    def f(x: Int, y: Int): Int = { x + y }
+    def g(x: Int, y: Int): Int = { x * y }
     val u = GpiOps.gpi_m_times_v(f, g, f, 0, m, v, Option(0), Option(0))
     val ua = Vector(15, 18, 21)
     assert(ua.corresponds(u.toVector)(_ == _))
   }
 
-  def mult[A](a: Vector[Vector[A]], b: Vector[Vector[A]])(implicit n: Numeric[A]) = {
+  def mult[A](
+      a: Vector[Vector[A]],
+      b: Vector[Vector[A]])(implicit n: Numeric[A]): Vector[Vector[A]] = {
     import n._
     for (row <- a)
-      yield for (col <- b.transpose)
-      yield row zip col map Function.tupled(_ * _) reduceLeft (_ + _)
+      yield
+        for (col <- b.transpose)
+          yield row zip col map Function.tupled(_ * _) reduceLeft (_ + _)
   }
   def toArray[A: ClassTag](a: Vector[Vector[A]]): Array[Array[A]] = {
     a.map(x => x.toArray).toArray
@@ -139,13 +142,13 @@ class GpiGpiSuite extends FunSuite with Matchers {
     // the scala result
     val resScala = mult(a, a)
 
-    // the gpi result 
+    // the gpi result
     // start w/ transpose end up w/ transpose
     val at = a.transpose
     val aGpi = GpiSparseRowMatrix.fromVector(a, 0)
     val atGpi = GpiSparseRowMatrix.fromVector(at, 0)
-    def f = (x: Int, y: Int) => x + y
-    def g = (x: Int, y: Int) => x * y
+    def f(x: Int, y: Int): Int = { x + y }
+    def g(x: Int, y: Int): Int = { x * y }
     val x = GpiOps.gpi_m_times_m(f, g, f, 0, aGpi, atGpi, Option(0), Option(0))
     val resGpi = GpiSparseRowMatrix.toVector(x).transpose
 
@@ -226,9 +229,7 @@ class GpiGpiSuite extends FunSuite with Matchers {
     val size = 10
     val x = 11
     val u = GpiOps.gpi_replicate(size, x)
-    def f(a: Int, b: Int) = {
-      a + b
-    }
+    def f(x: Int, y: Int): Int = { x + y }
     val v = GpiOps.gpi_zip(f, u, u)
     assert(GpiGpiSuite.getVectorType(v) == "SparseVector")
     assert(v.size == size)
@@ -271,7 +272,9 @@ class GpiGpiSuite extends FunSuite with Matchers {
 
     // the matrix
     val nv = 16
-    val raw = Vector.fill[Int](nv * nv)(0).zipWithIndex.map { case (v, i) => if (i == 4) 1 else 0 }
+    val raw = Vector.fill[Int](nv * nv)(0).zipWithIndex.map {
+      case (v, i) => if (i == 4) 1 else 0
+    }
 
     val a = raw.grouped(nv).toVector
     // scala transpose
@@ -297,4 +300,3 @@ object GpiGpiSuite {
     }
   }
 }
-

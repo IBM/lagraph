@@ -6,9 +6,9 @@
  * to you under the Apache License, Version 2.0 (the
  * "License"); you may not use this file except in compliance
  * with the License.  You may obtain a copy of the License at
- * 
+ *
  *   http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing,
  * software distributed under the License is distributed on an
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
@@ -17,20 +17,22 @@
  * under the License.
  */
 package com.ibm.lagraph.impl
+// TODO get rid of printlns
+// scalastyle:off println
 
 import org.scalatest.FunSuite
 import org.scalatest.Matchers
 import scala.reflect.ClassTag
-import scala.collection.mutable.{ Map => MMap }
+import scala.collection.mutable.{Map => MMap}
 import com.holdenkarau.spark.testing.SharedSparkContext
 import com.ibm.lagraph._
 
-//object add_mul extends LagSemiring[Double] {
-//  override val addition = (x: Double, y: Double) => x + y
-//  val multiplication = (x: Double, y: Double) => x * y
-//  val zero = 0.0
-//  val one = 1.0
-//}
+// object add_mul extends LagSemiring[Double] {
+//   override val addition = (x: Double, y: Double) => x + y
+//   val multiplication = (x: Double, y: Double) => x * y
+//   val zero = 0.0
+//   val one = 1.0
+// }
 class LagDstrGpiSuite extends FunSuite with Matchers with SharedSparkContext {
   val denseGraphSizes = List(1 << 4, 1 << 5)
   //  val sparseGraphSizes = List(1 << 16, 1 << 17, 1 << 29, 1 << 30)
@@ -39,9 +41,13 @@ class LagDstrGpiSuite extends FunSuite with Matchers with SharedSparkContext {
   val nblocks = List(1 << 0, 1 << 1, 1 << 2)
 
   val add_mul = LagSemiring.plus_times[Double]
-  def hadamardProduct[A](a: Vector[Vector[A]], b: Vector[Vector[A]])(implicit n: Numeric[A]) = {
+  def hadamardProduct[A](
+      a: Vector[Vector[A]],
+      b: Vector[Vector[A]])(implicit n: Numeric[A]): Vector[Vector[A]] = {
     import n._
-    a.zip(b).map { case (ar, br) => ar.zip(br).map { case (av, bv) => av + bv } }
+    a.zip(b).map {
+      case (ar, br) => ar.zip(br).map { case (av, bv) => av + bv }
+    }
   }
   test("LagDstrContext.mHm") {
     val sparseValue = 0.0
@@ -54,24 +60,46 @@ class LagDstrGpiSuite extends FunSuite with Matchers with SharedSparkContext {
         val nc = nv
         val nA = Vector.tabulate(nv, nv)((r, c) => (r * nv + c).toDouble)
         val nB = Vector.tabulate(nv, nv)((r, c) => (r * nv + c).toDouble)
-        val mA = hc.mFromMap(LagContext.mapFromSeqOfSeq(Vector.tabulate(nr, nc)((r, c) => (r * nc + c).toDouble),sparseValue), sparseValue)
-        val mB = hc.mFromMap(LagContext.mapFromSeqOfSeq(Vector.tabulate(nr, nc)((r, c) => (r * nc + c).toDouble),sparseValue), sparseValue)
+        val mA = hc.mFromMap(
+          LagContext.mapFromSeqOfSeq(Vector.tabulate(nr, nc)((r, c) => (r * nc + c).toDouble),
+                                     sparseValue),
+          sparseValue)
+        val mB = hc.mFromMap(
+          LagContext.mapFromSeqOfSeq(Vector.tabulate(nr, nc)((r, c) => (r * nc + c).toDouble),
+                                     sparseValue),
+          sparseValue)
         val _mul = LagSemiring.min_plus[Double]
         val mHm = hc.mHm(_mul, mA, mB)
         val (mResMap, mResSparse) = hc.mToMap(mHm)
         assert(mResSparse == sparseValue)
         val mHmRes = LagContext.vectorOfVectorFromMap(mResMap, sparseValue, (nv.toLong, nv.toLong))
         val mHmAct = hadamardProduct(nA, nB)
-        (0 until nv).map { r => (0 until nv).map { c => assert(mHmRes(r)(c) == mHmAct(r)(c)) } }
+        (0 until nv).map { r =>
+          (0 until nv).map { c =>
+            assert(mHmRes(r)(c) == mHmAct(r)(c))
+          }
+        }
 
-        (0 until nr).map { r => (0 until nc).map { c => assert(mHmRes(r)(c) == (2 * (r * nc + c)).toDouble) } }
+        (0 until nr).map { r =>
+          (0 until nc).map { c =>
+            assert(mHmRes(r)(c) == (2 * (r * nc + c)).toDouble)
+          }
+        }
       }
     }
   }
-  def outerproduct[A](a: Vector[Vector[A]], acol: Int, b: Vector[Vector[A]], brow: Int)(implicit n: Numeric[A]) = {
+  def outerproduct[A](
+      a: Vector[Vector[A]],
+      acol: Int,
+      b: Vector[Vector[A]], brow: Int)(
+      implicit n: Numeric[A]): Vector[Vector[A]] = {
     import n._
     val bw = b.zipWithIndex
-    a.map { ar => bw.withFilter { case (br, bri) => bri == brow }.flatMap { case (br, bri) => br.map { _ * ar(acol) } } }
+    a.map { ar =>
+      bw.withFilter { case (br, bri) => bri == brow }.flatMap {
+        case (br, bri) => br.map { _ * ar(acol) }
+      }
+    }
   }
   test("LagDstrContext.mOp") {
     val sparseValue = 0.0
@@ -85,8 +113,10 @@ class LagDstrGpiSuite extends FunSuite with Matchers with SharedSparkContext {
         val nv = graphSize
         val nA = Vector.tabulate(nv, nv)((r, c) => (r * nv + c).toDouble)
         val nB = Vector.tabulate(nv, nv)((r, c) => (r * nv + c).toDouble)
-        val mA = hc.mFromMap(LagContext.mapFromSeqOfSeq(nA,sparseValue), sparseValue)
-        val mB = hc.mFromMap(LagContext.mapFromSeqOfSeq(nB,sparseValue), sparseValue)
+        val mA =
+          hc.mFromMap(LagContext.mapFromSeqOfSeq(nA, sparseValue), sparseValue)
+        val mB =
+          hc.mFromMap(LagContext.mapFromSeqOfSeq(nB, sparseValue), sparseValue)
         //    }
         val _mul = LagSemiring.plus_times[Double]
         (0 until nv).map { oc =>
@@ -96,9 +126,14 @@ class LagDstrGpiSuite extends FunSuite with Matchers with SharedSparkContext {
               val mOp = hc.mOp(_mul, mA, oc.toLong, mB, or.toLong)
               val (mResMap, mResSparse) = hc.mToMap(mOp)
               assert(mResSparse == sparseValue)
-              val mHmRes = LagContext.vectorOfVectorFromMap(mResMap, sparseValue, (nv.toLong, nv.toLong))
+              val mHmRes =
+                LagContext.vectorOfVectorFromMap(mResMap, sparseValue, (nv.toLong, nv.toLong))
               val mHmAct = outerproduct(nA, oc, nB, or)
-              (0 until nv).map { r => (0 until nv).map { c => assert(mHmRes(r)(c) == mHmAct(r)(c)) } }
+              (0 until nv).map { r =>
+                (0 until nv).map { c =>
+                  assert(mHmRes(r)(c) == mHmAct(r)(c))
+                }
+              }
             }
           }
         }
@@ -112,21 +147,26 @@ class LagDstrGpiSuite extends FunSuite with Matchers with SharedSparkContext {
   //    val nr = nv
   //    val nc = nv
   //    val sparseValue = 0.0
-  //    val mA = hc.mFromSeqOfSeq(Vector.tabulate(nr, nc)((r, c) => (r * nc + c).toDouble), sparseValue)
+  //    val mA = hc.mFromSeqOfSeq(
+  //      Vector.tabulate(nr, nc)((r, c) => (r * nc + c).toDouble), sparseValue)
   //
   //    val f = (a: Double) => 2.0 * a
   //    val mMap = hc.mMap(f, mA)
   //
   //    val mMapRes = hc.mToVectorOfVector(mMap)
   //
-  //    (0 until nr).map { r => (0 until nc).map { c => assert(mMapRes(r)(c) == (2 * (r * nc + c)).toDouble) } }
+  //    (0 until nr).map { r => (0 until nc).map {
+  //      c => assert(mMapRes(r)(c) == (2 * (r * nc + c)).toDouble) } }
   //  }
   //
-  def mult[A](a: Vector[Vector[A]], b: Vector[Vector[A]])(implicit n: Numeric[A]) = {
+  def mult[A](
+      a: Vector[Vector[A]],
+      b: Vector[Vector[A]])(implicit n: Numeric[A]): Vector[Vector[A]] = {
     import n._
     for (row <- a)
-      yield for (col <- b.transpose)
-      yield row zip col map Function.tupled(_ * _) reduceLeft (_ + _)
+      yield
+        for (col <- b.transpose)
+          yield row zip col map Function.tupled(_ * _) reduceLeft (_ + _)
   }
   def toArray[A: ClassTag](a: Vector[Vector[A]]): Array[Array[A]] = {
     a.map(x => x.toArray).toArray
@@ -139,22 +179,28 @@ class LagDstrGpiSuite extends FunSuite with Matchers with SharedSparkContext {
       for (nblock <- nblocks) {
         println("LagDstrContext.mTm", graphSize, nblock)
         val hc: LagContext = LagContext.getLagDstrContext(sc, graphSize, nblock)
-        
+
         val nv = graphSize
-    
+
         val nr = nv
         val nc = nv
         val nA = Vector.tabulate(nv, nv)((r, c) => r * nv + c + 1.0)
         val nB = Vector.tabulate(nv, nv)((r, c) => r * nv + c + 101.0)
         val sparseValue = 0.0
-        val mA = hc.mFromMap(LagContext.mapFromSeqOfSeq(nA, sparseValue), sparseValue)
-        val mB = hc.mFromMap(LagContext.mapFromSeqOfSeq(nB, sparseValue), sparseValue)
-        
+        val mA =
+          hc.mFromMap(LagContext.mapFromSeqOfSeq(nA, sparseValue), sparseValue)
+        val mB =
+          hc.mFromMap(LagContext.mapFromSeqOfSeq(nB, sparseValue), sparseValue)
+
         val mTmRes = hc.mTm(sr, mA, mB)
-        
+
         val resScala = mult(nA, nB)
 //        println(toArray(resScala).deep.mkString("\n"))
-        assert(toArray(LagContext.vectorOfVectorFromMap(hc.mToMap(mTmRes)._1, sparseValue, (nv.toLong, nv.toLong))).deep == toArray(resScala).deep)
+        assert(
+          toArray(LagContext.vectorOfVectorFromMap(hc.mToMap(mTmRes)._1,
+                                                   sparseValue,
+                                                   (nv.toLong, nv.toLong))).deep == toArray(
+            resScala).deep)
       }
     }
   }
@@ -167,11 +213,12 @@ class LagDstrGpiSuite extends FunSuite with Matchers with SharedSparkContext {
 //    val raw = (1 to nr * nc).map(_.toDouble).toVector
 //
 //    val a = raw.grouped(nc).toVector
-//    val aFull = Vector.tabulate(nr, nr)((r, c) => (r * 2 + 1 + c).toDouble) //  a augmented w/ columns
+//    val aFull = Vector.tabulate(nr, nr)((r, c) =>
+//      (r * 2 + 1 + c).toDouble) //  a augmented w/ columns
 //    val at = a.transpose
 //    val resScala = mult(a, at)
 //
-//    // the hpi result 
+//    // the hpi result
 //    // start w/ transpose end up w/ transpose
 //    val aFullGpi = hc.mFromSeqOfSeq(aFull, sparseValue)
 //    //    val aGpi = hc.mFromSeqOfSeq(a, sparseValue)
@@ -199,11 +246,17 @@ class LagDstrGpiSuite extends FunSuite with Matchers with SharedSparkContext {
         val hc: LagContext = LagContext.getLagDstrContext(sc, graphSize, nblock)
         // vector
         val sparseValue = 0.0
-        val vMap = Map((0 until graphSize).map { r => (r.toLong, r.toDouble) }: _*)
+        val vMap = Map((0 until graphSize).map { r =>
+          (r.toLong, r.toDouble)
+        }: _*)
         val v = hc.vFromMap[Double](vMap, sparseValue)
 
         // matrix
-        val mMap = Map((0 until graphSize).map { r => (0 until graphSize).map { c => ((r.toLong, c.toLong), (r * graphSize + c).toDouble) } }.flatten: _*)
+        val mMap = Map((0 until graphSize).map { r =>
+          (0 until graphSize).map { c =>
+            ((r.toLong, c.toLong), (r * graphSize + c).toDouble)
+          }
+        }.flatten: _*)
         val m = hc.mFromMap[Double](mMap, sparseValue)
 
         // multiply
@@ -234,8 +287,10 @@ class LagDstrGpiSuite extends FunSuite with Matchers with SharedSparkContext {
   //    val nc = nv
   //    val sparseValueDouble = 0.0
   //    val sparseValueInt = 0
-  //    val mA = hc.mFromSeqOfSeq(Vector.tabulate(nr, nc)((r, c) => (r * nc + c).toDouble), sparseValueDouble)
-  //    val mB = hc.mFromSeqOfSeq(Vector.tabulate(nr, nc)((r, c) => (r * nc + c).toInt), sparseValueInt)
+  //    val mA = hc.mFromSeqOfSeq(Vector.tabulate(nr, nc)((r, c) =>
+  //      (r * nc + c).toDouble), sparseValueDouble)
+  //    val mB = hc.mFromSeqOfSeq(Vector.tabulate(nr, nc)((r, c) =>
+  //      (r * nc + c).toInt), sparseValueInt)
   //
   //    val f = (a: Double, b: Int) => Tuple3(a, b, (a + b).toInt)
   //    val mZip = hc.mZip(f, mA, mB)
@@ -260,7 +315,9 @@ class LagDstrGpiSuite extends FunSuite with Matchers with SharedSparkContext {
         println("LagDstrContext.vMap", graphSize, nblock)
         val hc: LagContext = LagContext.getLagDstrContext(sc, graphSize, nblock)
         // vector
-        val vMap = Map((0 until graphSize).map { r => (r.toLong, r.toDouble) }: _*)
+        val vMap = Map((0 until graphSize).map { r =>
+          (r.toLong, r.toDouble)
+        }: _*)
         val v = hc.vFromMap[Double](vMap, sparseValueDouble)
 
         val doubleItToInt = (x: Double) => {
@@ -334,7 +391,9 @@ class LagDstrGpiSuite extends FunSuite with Matchers with SharedSparkContext {
         val (wResMap, waSparse) = hc.vToMap(w)
         assert(waSparse == sparseValueDouble)
         val wRes = LagContext.vectorFromMap(wResMap, waSparse, graphSize)
-        val vScala = (0 until graphSize).map { a => (a + a + offset).toDouble }.toVector
+        val vScala = (0 until graphSize).map { a =>
+          (a + a + offset).toDouble
+        }.toVector
         assert(wRes.size == graphSize)
         assert(vScala.corresponds(wRes)(_ == _))
       }
@@ -406,7 +465,9 @@ class LagDstrGpiSuite extends FunSuite with Matchers with SharedSparkContext {
         val f = (a: Long, b: Long) => (a, b)
         val w = hc.vZipWithIndex(f, u)
         val wRes = hc.vToVector(w)
-        val vScala = (0 until graphSize).map { a => Tuple2(a, a) }.toVector
+        val vScala = (0 until graphSize).map { a =>
+          Tuple2(a, a)
+        }.toVector
         assert(wRes.size == graphSize)
         assert(vScala.corresponds(wRes)(_ == _))
       }
@@ -421,28 +482,29 @@ class LagDstrGpiSuite extends FunSuite with Matchers with SharedSparkContext {
         val hc: LagContext = LagContext.getLagDstrContext(sc, graphSize, nblock)
 
         val testIndex = 3
-        val vTest = Range(0, graphSize).toVector.map {
-          x =>
-            if (x == testIndex)
-              (x.toLong, -1)
-            else
-              (x.toLong, x)
+        val vTest = Range(0, graphSize).toVector.map { x =>
+          if (x == testIndex) {
+            (x.toLong, -1)
+          } else {
+            (x.toLong, x)
+          }
         }.toMap
         val v = hc.vFromMap(vTest, sparseValueInt)
         val f = (v: (Int, Long), c: (Int, Long)) => {
-          if (v._1 < c._1)
+          if (v._1 < c._1) {
             (v._1, v._2)
-          else
+          } else {
             (c._1, c._2)
+          }
         }
         val c = (l: (Int, Long), r: (Int, Long)) => {
           if (l._1 < r._1) l else r
         }
 
-        val res = hc.vReduceWithIndex(f, c, (Int.MaxValue,Long.MaxValue), v)
+        val res = hc.vReduceWithIndex(f, c, (Int.MaxValue, Long.MaxValue), v)
         assert(res._2 == testIndex.toLong)
       }
     }
   }
 }
-
+// scalastyle:on println

@@ -6,9 +6,9 @@
  * to you under the Apache License, Version 2.0 (the
  * "License"); you may not use this file except in compliance
  * with the License.  You may obtain a copy of the License at
- * 
+ *
  *   http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing,
  * software distributed under the License is distributed on an
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
@@ -17,11 +17,13 @@
  * under the License.
  */
 package com.ibm.lagraph.impl
+// TODO get rid of printlns
+// scalastyle:off println
 
 import org.scalatest.FunSuite
 import org.scalatest.Matchers
 import scala.reflect.ClassTag
-import scala.collection.mutable.{ Map => MMap }
+import scala.collection.mutable.{Map => MMap}
 import com.holdenkarau.spark.testing.SharedSparkContext
 import com.ibm.lagraph._
 
@@ -47,7 +49,10 @@ class LagDstrMechanicSuite extends FunSuite with Matchers with SharedSparkContex
       for (nblock <- nblocks) {
         println("LagDstrContext.mTranspose", graphSize, nblock)
         val hc: LagContext = LagContext.getLagDstrContext(sc, graphSize, nblock)
-        val m = hc.mFromMap(LagContext.mapFromSeqOfSeq(Vector.tabulate(nr, nc)((r, c) => (r * nc + c).toDouble), sparseValueDouble), sparseValueDouble)
+        val m = hc.mFromMap(
+          LagContext.mapFromSeqOfSeq(Vector.tabulate(nr, nc)((r, c) => (r * nc + c).toDouble),
+                                     sparseValueDouble),
+          sparseValueDouble)
         val mT = m.transpose
 
         val (mTres, mTresSparse) = hc.mToMap(mT)
@@ -56,7 +61,11 @@ class LagDstrMechanicSuite extends FunSuite with Matchers with SharedSparkContex
         mTres.map { case (k, v) => a(k._1.toInt)(k._2.toInt) = v }
 
         val b = Vector.fill(nr)(ArrayBuffer.fill[Double](nc)(sparseValueDouble))
-        val y = (0 until nr).map { r => (0 until nc).map { c => b(r)(c) = (c * nr + r).toDouble } }
+        val y = (0 until nr).map { r =>
+          (0 until nc).map { c =>
+            b(r)(c) = (c * nr + r).toDouble
+          }
+        }
 
         assert(toArray(a).deep == toArray(b).deep)
       }
@@ -72,7 +81,10 @@ class LagDstrMechanicSuite extends FunSuite with Matchers with SharedSparkContex
       for (nblock <- nblocks) {
         println("LagDstrContext.vFromMrow", graphSize, nblock)
         val hc: LagContext = LagContext.getLagDstrContext(sc, graphSize, nblock)
-        val m = hc.mFromMap(LagContext.mapFromSeqOfSeq(Vector.tabulate(nr, nc)((r, c) => (r * nc + c).toDouble), sparseValueDouble), sparseValueDouble)
+        val m = hc.mFromMap(
+          LagContext.mapFromSeqOfSeq(Vector.tabulate(nr, nc)((r, c) => (r * nc + c).toDouble),
+                                     sparseValueDouble),
+          sparseValueDouble)
 
         val testRow = 1
         val v = hc.vFromMrow(m, testRow)
@@ -100,8 +112,12 @@ class LagDstrMechanicSuite extends FunSuite with Matchers with SharedSparkContex
       for (nblock <- nblocks) {
         println("LagDstrContext.vFromMrow", graphSize, nblock)
         val hc: LagContext = LagContext.getLagDstrContext(sc, graphSize, nblock)
-//        val m = hc.mFromSeqOfSeq(Vector.tabulate(nr, nc)((r, c) => (r * nc + c).toDouble), sparseValueDouble)
-        val m = hc.mFromMap(LagContext.mapFromSeqOfSeq(Vector.tabulate(nr, nc)((r, c) => (r * nc + c).toDouble), sparseValueDouble), sparseValueDouble)
+//        val m = hc.mFromSeqOfSeq(Vector.tabulate(nr, nc)((r, c) =>
+//          (r * nc + c).toDouble), sparseValueDouble)
+        val m = hc.mFromMap(
+          LagContext.mapFromSeqOfSeq(Vector.tabulate(nr, nc)((r, c) => (r * nc + c).toDouble),
+                                     sparseValueDouble),
+          sparseValueDouble)
 
         val testCol = 1
         val v = hc.vFromMcol(m, testCol)
@@ -139,7 +155,8 @@ class LagDstrMechanicSuite extends FunSuite with Matchers with SharedSparkContex
   //        val rRange = (2, 5)
   //        val cRange = (0, nc)
   //        val cSparseIndex = 0
-  //        val mMap = Map((0 until graphSize).map { r => (0 until graphSize).map { c => ((r, c), (r * graphSize + c).toDouble) } }.flatten: _*)
+  //        val mMap = Map((0 until graphSize).map { r => (0 until graphSize).map {
+  //          c => ((r, c), (r * graphSize + c).toDouble) } }.flatten: _*)
   //        val m = hc.mFromMap[Double](mMap, sparseValue)
   //        //    val vMatrix = Vector.tabulate(nr, nc)((r, c) => (r * nc + c).toDouble)
   //        //    val m = hc.mFromSeqOfSeq(vMatrix, sparseValue)
@@ -148,7 +165,8 @@ class LagDstrMechanicSuite extends FunSuite with Matchers with SharedSparkContex
   //        val (mSresMap, sv1) = hc.mToMap(mS)
   //        assert(mSresMap.size == (rRange._2 - rRange._1) * graphSize) // keep
   //
-  //        val mSres = LagContext.vectorOfVectorFromMap(mSresMap, sv1, (rRange._2 - rRange._1, graphSize))
+  //        val mSres = LagContext.vectorOfVectorFromMap(
+  //          mSresMap, sv1, (rRange._2 - rRange._1, graphSize))
   //        mSres.zipWithIndex.map {
   //          case (vr, r) => {
   //            assert(vr.size == graphSize)
@@ -163,4 +181,4 @@ class LagDstrMechanicSuite extends FunSuite with Matchers with SharedSparkContex
   //    }
   //  }
 }
-
+// scalastyle:on println

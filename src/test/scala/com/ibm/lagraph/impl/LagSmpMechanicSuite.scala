@@ -6,9 +6,9 @@
  * to you under the Apache License, Version 2.0 (the
  * "License"); you may not use this file except in compliance
  * with the License.  You may obtain a copy of the License at
- * 
+ *
  *   http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing,
  * software distributed under the License is distributed on an
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
@@ -21,7 +21,7 @@ package com.ibm.lagraph.impl
 import org.scalatest.FunSuite
 import org.scalatest.Matchers
 import scala.reflect.ClassTag
-import scala.collection.mutable.{ Map => MMap }
+import scala.collection.mutable.{Map => MMap}
 import com.ibm.lagraph._
 
 class LagSmpMechanicSuite extends FunSuite with Matchers {
@@ -32,11 +32,12 @@ class LagSmpMechanicSuite extends FunSuite with Matchers {
     var nc = 10
     val vMatrix = Vector.tabulate(nr, nc)((r, c) => (r * nc + c).toDouble)
     val sparseValue = 0.0
-    val m = hc.mFromMap(LagContext.mapFromSeqOfSeq(vMatrix, sparseValue), sparseValue)
+    val m =
+      hc.mFromMap(LagContext.mapFromSeqOfSeq(vMatrix, sparseValue), sparseValue)
     val mT = m.transpose
 
-    val (vvm,vvs) = hc.mToMap(mT)
-    val mTres = LagContext.vectorOfVectorFromMap(vvm, vvs, (nr,nc))
+    val (vvm, vvs) = hc.mToMap(mT)
+    val mTres = LagContext.vectorOfVectorFromMap(vvm, vvs, (nr, nc))
     assert(mTres.size == nr)
     mTres.zipWithIndex.map {
       case (vr, r) => {
@@ -56,7 +57,8 @@ class LagSmpMechanicSuite extends FunSuite with Matchers {
     var nc = 10
     val vMatrix = Vector.tabulate(nr, nc)((r, c) => (r * nc + c).toDouble)
     val sparseValue = 0.0
-    val m = hc.mFromMap(LagContext.mapFromSeqOfSeq(vMatrix, sparseValue), sparseValue)
+    val m =
+      hc.mFromMap(LagContext.mapFromSeqOfSeq(vMatrix, sparseValue), sparseValue)
     val testRow = 1
     val v = hc.vFromMrow(m, testRow)
 
@@ -75,7 +77,8 @@ class LagSmpMechanicSuite extends FunSuite with Matchers {
     var nc = 10
     val vMatrix = Vector.tabulate(nr, nc)((r, c) => (r * nc + c).toDouble)
     val sparseValue = 0.0
-    val m = hc.mFromMap(LagContext.mapFromSeqOfSeq(vMatrix, sparseValue), sparseValue)
+    val m =
+      hc.mFromMap(LagContext.mapFromSeqOfSeq(vMatrix, sparseValue), sparseValue)
     val testCol = 1
     val v = hc.vFromMcol(m, testCol)
 
@@ -137,4 +140,3 @@ class LagSmpMechanicSuite extends FunSuite with Matchers {
   //    }
   //  }
 }
-

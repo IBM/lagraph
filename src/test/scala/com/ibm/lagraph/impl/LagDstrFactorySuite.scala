@@ -6,9 +6,9 @@
  * to you under the Apache License, Version 2.0 (the
  * "License"); you may not use this file except in compliance
  * with the License.  You may obtain a copy of the License at
- * 
+ *
  *   http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing,
  * software distributed under the License is distributed on an
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
@@ -17,12 +17,14 @@
  * under the License.
  */
 package com.ibm.lagraph.impl
+// TODO get rid of printlns
+// scalastyle:off println
 
 import com.holdenkarau.spark.testing.SharedSparkContext
 import org.scalatest.FunSuite
 import org.scalatest.Matchers
 import scala.reflect.ClassTag
-import scala.collection.mutable.{ Map => MMap }
+import scala.collection.mutable.{Map => MMap}
 import com.ibm.lagraph._
 
 class LagDstrFactorySuite extends FunSuite with Matchers with SharedSparkContext {
@@ -50,7 +52,9 @@ class LagDstrFactorySuite extends FunSuite with Matchers with SharedSparkContext
         val vRes = hc.vToVector(v)
         assert(v.size == hc.graphSize)
         assert(vRes.size == (end - start))
-        (start until end.toInt).map { r => assert(vRes(r - start) == r) }
+        (start until end.toInt).map { r =>
+          assert(vRes(r - start) == r)
+        }
       }
     }
   }
@@ -63,7 +67,8 @@ class LagDstrFactorySuite extends FunSuite with Matchers with SharedSparkContext
         val start = (2L, 2L)
         val m = hc.mIndices(start)
         val (mResMap, sparseValue) = hc.mToMap(m)
-        val mRes = LagContext.vectorOfVectorFromMap(mResMap, sparseValue, m.size)
+        val mRes =
+          LagContext.vectorOfVectorFromMap(mResMap, sparseValue, m.size)
         val end = (start._1 + graphSize, start._2 + graphSize)
         assert(mRes.size == (end._1 - start._1))
         mRes.zipWithIndex.map {
@@ -85,7 +90,8 @@ class LagDstrFactorySuite extends FunSuite with Matchers with SharedSparkContext
         val singleValue: Double = 99.0
         val m = hc.mReplicate(singleValue)
         val (mResMap, sparseValue) = hc.mToMap(m)
-        val mRes = LagContext.vectorOfVectorFromMap(mResMap, sparseValue, m.size)
+        val mRes =
+          LagContext.vectorOfVectorFromMap(mResMap, sparseValue, m.size)
         mRes.zipWithIndex.map {
           case (vr, r) => {
             assert(vr.size == graphSize)
@@ -98,4 +104,4 @@ class LagDstrFactorySuite extends FunSuite with Matchers with SharedSparkContext
     }
   }
 }
-
+// scalastyle:on println

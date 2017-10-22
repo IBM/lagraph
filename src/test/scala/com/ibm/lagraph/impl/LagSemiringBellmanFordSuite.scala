@@ -6,9 +6,9 @@
  * to you under the Apache License, Version 2.0 (the
  * "License"); you may not use this file except in compliance
  * with the License.  You may obtain a copy of the License at
- * 
+ *
  *   http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing,
  * software distributed under the License is distributed on an
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
@@ -17,20 +17,24 @@
  * under the License.
  */
 package com.ibm.lagraph.impl
+// TODO get rid of printlns
+// scalastyle:off println
 
 import org.scalatest.FunSuite
 import org.scalatest.Matchers
 import scala.reflect.ClassTag
-import scala.reflect.{ ClassTag, classTag }
-import scala.collection.mutable.{ Map => MMap }
+import scala.reflect.{ClassTag, classTag}
+import scala.collection.mutable.{Map => MMap}
 import com.holdenkarau.spark.testing.SharedSparkContext
 import com.ibm.lagraph._
 
 class LagSemiringBellmanFordSuite extends FunSuite with Matchers {
 
-  def DEBUG = false
+  def DEBUG: Boolean = false
 
-  def srTests[T](sr: LagSemiring[T], ts: List[T], validIn: Option[Function[T, Boolean]] = None): Unit = {
+  def srTests[T](sr: LagSemiring[T],
+                 ts: List[T],
+                 validIn: Option[Function[T, Boolean]] = None): Unit = {
 
     val validDef = (x: T) => true
     val valid = validIn.getOrElse(validDef)
@@ -41,16 +45,27 @@ class LagSemiringBellmanFordSuite extends FunSuite with Matchers {
     if (DEBUG) println("1) check that (T, addition, zero) is positive monoid w/ identity zero")
     if (DEBUG) println("1a) associative: a addition ( b addition c) = (a addition b) addition c")
     for (a <- ts)
-      if (valid(a)) for (b <- ts)
-        if (valid(b)) for (c <- ts)
-          if (valid(c)) {
-            assert(sr.addition(a, (sr.addition(b, c)))
-              == sr.addition(sr.addition(a, b), c))
+      if (valid(a)) {
+        for (b <- ts)
+          if (valid(b)) {
+            for (c <- ts)
+            {
+              if (valid(c)) {
+                assert(
+                  sr.addition(a, (sr.addition(b, c)))
+                    == sr.addition(sr.addition(a, b), c))
+              }
+            }
           }
+      }
     if (DEBUG) println("1b) commutative: a addition b = b addition a")
-    for (a <- ts)
-      if (valid(a)) for (b <- ts)
-        if (valid(b)) assert(sr.addition(a, b) == sr.addition(b, a))
+    for (a <- ts) {
+      if (valid(a)) {
+        for (b <- ts) {
+          if (valid(b)) assert(sr.addition(a, b) == sr.addition(b, a))
+        }
+      }
+    }
     if (DEBUG) println("1c) identity: a addition zero = zero addition a = a")
     for (a <- ts)
       if (valid(a)) {
@@ -58,12 +73,26 @@ class LagSemiringBellmanFordSuite extends FunSuite with Matchers {
         assert(sr.addition(a, zero) == a)
       }
     if (DEBUG) println("2) (S, multiplication, one) is a monoid w/ identity one")
-    if (DEBUG) println("2a) associative: a multiplication ( b multiplication c) = ( a multiplication b) multiplication c")
-    for (a <- ts)
-      if (valid(a)) for (b <- ts)
-        if (valid(b)) for (c <- ts)
-          if (valid(c)) assert(sr.multiplication(a, (sr.multiplication(b, c)))
-            == sr.multiplication(sr.multiplication(a, b), c))
+    if (DEBUG) {
+      println(
+        "2a) associative: a multiplication ( b multiplication c) = " +
+        "( a multiplication b) multiplication c")
+    }
+    for (a <- ts) {
+      if (valid(a)) {
+        for (b <- ts) {
+          if (valid(b)) {
+            for (c <- ts) {
+              if (valid(c)) {
+                assert(
+                  sr.multiplication(a, (sr.multiplication(b, c)))
+                    == sr.multiplication(sr.multiplication(a, b), c))
+              }
+            }
+          }
+        }
+      }
+    }
     if (DEBUG) println("2b) identity: a multiplication one = one multiplication a = a")
     for (a <- ts)
       if (valid(a)) {
@@ -71,17 +100,32 @@ class LagSemiringBellmanFordSuite extends FunSuite with Matchers {
         assert(sr.multiplication(a, one) == a)
       }
     if (DEBUG) println("3) times multiplication over addition")
-    if (DEBUG) println("3a) a multiplication (b addition c) = (a multiplication b) addition (a multiplication c)")
-    if (DEBUG) println("3b) (b addition c) multiplication a = (b multiplication a) addition (c multiplication a)")
-    for (a <- ts)
-      if (valid(a)) for (b <- ts)
-        if (valid(b)) for (c <- ts)
-          if (valid(c)) {
-            assert(sr.multiplication(a, sr.addition(b, c))
-              == sr.addition(sr.multiplication(a, b), sr.multiplication(a, c)))
-            assert(sr.multiplication(sr.addition(b, c), a)
-              == sr.addition(sr.multiplication(b, a), sr.multiplication(c, a)))
+    if (DEBUG) {
+      println(
+        "3a) a multiplication (b addition c) = (a multiplication b) addition (a multiplication c)")
+    }
+    if (DEBUG) {
+      println(
+        "3b) (b addition c) multiplication a = (b multiplication a) addition (c multiplication a)")
+    }
+    for (a <- ts) {
+      if (valid(a)) {
+        for (b <- ts) {
+          if (valid(b)) {
+            for (c <- ts) {
+              if (valid(c)) {
+                assert(
+                  sr.multiplication(a, sr.addition(b, c))
+                    == sr.addition(sr.multiplication(a, b), sr.multiplication(a, c)))
+                assert(
+                  sr.multiplication(sr.addition(b, c), a)
+                    == sr.addition(sr.multiplication(b, a), sr.multiplication(c, a)))
+              }
+            }
           }
+        }
+      }
+    }
     if (DEBUG) println("4) zero is an annihilator under multiplication")
     for (a <- ts)
       if (valid(a)) {
@@ -98,14 +142,15 @@ class LagSemiringBellmanFordSuite extends FunSuite with Matchers {
     def compare(ui: PathType, vi: PathType): Int = {
       val w1 = ui._1; val h1 = ui._2; val p1 = ui._3
       val w2 = vi._1; val h2 = vi._2; val p2 = vi._3
-      if (w1 < w2)
+      if (w1 < w2) {
         -1
-      else if ((w1 == w2) && (h1 < h2))
+      } else if ((w1 == w2) && (h1 < h2)) {
         -1
-      else if ((w1 == w2) && (h1 == h2) && (p1 < p2))
+      } else if ((w1 == w2) && (h1 == h2) && (p1 < p2)) {
         -1
-      else
+      } else {
         1
+      }
     }
   }
   trait PathTypeAsNumeric extends LagSemiringAsNumeric[PathType] with PathTypeOrdering {
@@ -113,33 +158,36 @@ class LagSemiringBellmanFordSuite extends FunSuite with Matchers {
     def plus(ui: PathType, vi: PathType): PathType = {
 
       def fpinf(x: Float, y: Float): Float =
-        if (x == Float.MaxValue || y == Float.MaxValue)
+        if (x == Float.MaxValue || y == Float.MaxValue) {
           Float.MaxValue
-        else
+        } else {
           x + y
+        }
       def lpinf(x: Long, y: Long): Long =
-        if (x == Long.MaxValue || y == Long.MaxValue)
+        if (x == Long.MaxValue || y == Long.MaxValue) {
           Long.MaxValue
-        else
+        } else {
           x + y
+        }
 
       val _zero = fromInt(0)
       val w1 = ui._1; val h1 = ui._2; val p1 = ui._3
       val w2 = vi._1; val h2 = vi._2; val p2 = vi._3
-      if (p2 != _zero._3) // for p2 annihilator (not) // p2 maybe identity
+      if (p2 != _zero._3) { // for p2 annihilator (not) // p2 maybe identity
         // p2 not annihilator
-        if (p1 == _zero._3) // for p1 annihilator (is) (never happens)
+        if (p1 == _zero._3) { // for p1 annihilator (is) (never happens)
           // p1 is annihilator (is)
           (fpinf(w1, w2), lpinf(h1, h2), p2)
-        else // for p1 annihilator (not)
+        } else // for p1 annihilator (not)
         // p1 not annihilator
-        if (p2 != nodeNil) // p2 not identity //original
-          (fpinf(w1, w2), lpinf(h1, h2), p2) //original
-        //        else if (p1 != nodeInf) // p2 is identity //original
+        if (p2 != nodeNil) { // p2 not identity // original
+          (fpinf(w1, w2), lpinf(h1, h2), p2) // original
+        //        else if (p1 != nodeInf) // p2 is identity // original
         //          (pinf(w1,w2), pinf(h1,h2), p2) //original // broke for p2 identity
-        else // p2 is identity
+        } else { // p2 is identity
           (fpinf(w1, w2), lpinf(h1, h2), p1) // original
-      else // for p2 annihilator (is) (never happens)
+        }
+      } else {// for p2 annihilator (is) (never happens)
         (fpinf(w1, w2), lpinf(h1, h2), p1)
       //      // p2 is annihilator (never happens) // dm
       //      if (p1 == _zero._3) // for annihilator (is) // dm
@@ -147,12 +195,14 @@ class LagSemiringBellmanFordSuite extends FunSuite with Matchers {
       //        (pinf(w1,w2), pinf(h1,h2), _zero._3) // both annihilator // dm
       //      else // dm
       //        (pinf(w1,w2), pinf(h1,h2), p1) // dm
+      }
     }
     def times(x: PathType, y: PathType): PathType = min(x, y)
     def fromInt(x: Int): PathType = x match {
-      case 0     => ((0.0).toFloat, 0L, nodeNil)
-      case 1     => (Float.MaxValue, Long.MaxValue, Long.MaxValue)
-      case other => throw new RuntimeException("fromInt for: >%d< not implemented".format(other))
+      case 0 => ((0.0).toFloat, 0L, nodeNil)
+      case 1 => (Float.MaxValue, Long.MaxValue, Long.MaxValue)
+      case other =>
+        throw new RuntimeException("fromInt for: >%d< not implemented".format(other))
     }
   }
   implicit object PathTypeAsNumeric extends PathTypeAsNumeric
@@ -160,7 +210,7 @@ class LagSemiringBellmanFordSuite extends FunSuite with Matchers {
   //  val PathTypeMinf = Tuple2(floatMinf, longMinf)
   // *********
   // bellmanford test constants
-  object bfcons {
+  object BfCons {
     val nodeInf: Long = Long.MaxValue
     val nodeNil: Long = -1L
     val hopInf: Long = Long.MaxValue
@@ -190,9 +240,9 @@ class LagSemiringBellmanFordSuite extends FunSuite with Matchers {
     val l0: Long = 0L
     val l99: Long = 99L
     val l199: Long = 199L
-    val fws = List(fm99, bfcons.wZero, bfcons.wInf, f99, f199)
-    val fhs = List(bfcons.hopZero, bfcons.hopInf, l99, l199)
-    val fns = List(bfcons.nodeNil, bfcons.nodeInf, l0, l99, l199)
+    val fws = List(fm99, BfCons.wZero, BfCons.wInf, f99, f199)
+    val fhs = List(BfCons.hopZero, BfCons.hopInf, l99, l199)
+    val fns = List(BfCons.nodeNil, BfCons.nodeInf, l0, l99, l199)
     var fs = List[Tuple3[Float, Long, Long]]()
     for (fw <- fws)
       for (fh <- fhs)
@@ -206,12 +256,17 @@ class LagSemiringBellmanFordSuite extends FunSuite with Matchers {
       // self path (0, 0, nil)
       var checkh1 = true; var checkh2 = true; var checkh3 = true
       // if no hops then weight must be zero and parent must be nil
-      checkh1 = if (h == bfcons.hopZero) (w == bfcons.wZero) && (n == bfcons.nodeNil) else true
+      checkh1 =
+        if (h == BfCons.hopZero) (w == BfCons.wZero) && (n == BfCons.nodeNil)
+        else true
       // if weight is zero then hops must be zero and parent must be nil
-      //      checkh2 = if (w == bfcons.wZero) (h == bfcons.hopZero) && (n == bfcons.nodeNil) else true
+      //      checkh2 = if (w == BfCons.wZero) (h == BfCons.hopZero) &&
+      //        (n == BfCons.nodeNil) else true
       // if parent is nil then hops must be zero and weight must be zero
-      checkh3 = if (n == bfcons.nodeNil) (w == bfcons.wZero) && (h == bfcons.hopZero) else true
-      // 
+      checkh3 =
+        if (n == BfCons.nodeNil) (w == BfCons.wZero) && (h == BfCons.hopZero)
+        else true
+      //
       // infinity checks (inf, inf, inf) for no path
       var checki1 = true; var checki2 = true; var checki3 = true
       checki1 = if (w == zero._1) (h == zero._2) && (n == zero._3) else true
@@ -219,25 +274,35 @@ class LagSemiringBellmanFordSuite extends FunSuite with Matchers {
       checki3 = if (n == zero._3) (w == zero._1) && (h == zero._2) else true
       //      println(checkh1,checkh2,checkh3,checki1,checki2,checki3)
       val passed = checkh1 && checkh2 && checkh3 && checki1 && checki2 && checki3
-      val wstr = if (w == zero._1) "inf" else if (w == bfcons.wZero) "zero" else "%s".format(w)
-      val hstr = if (h == zero._2) "inf" else if (h == bfcons.hopZero) "zero" else "%s".format(h)
-      val nstr = if (n == zero._3) "inf" else if (n == bfcons.nodeNil) "nil" else "%s".format(n)
-      //      if (!passed) println("Rejected: >%s<".format(Tuple3(wstr, hstr, nstr))) else println("Passed: >%s<".format(Tuple3(wstr, hstr, nstr)))
+      val wstr =
+        if (w == zero._1) "inf"
+        else if (w == BfCons.wZero) "zero"
+        else "%s".format(w)
+      val hstr =
+        if (h == zero._2) "inf"
+        else if (h == BfCons.hopZero) "zero"
+        else "%s".format(h)
+      val nstr =
+        if (n == zero._3) "inf"
+        else if (n == BfCons.nodeNil) "nil"
+        else "%s".format(n)
+      // if (!passed) println("Rejected: >%s<".format(Tuple3(wstr, hstr, nstr)))
+      //   else println("Passed: >%s<".format(Tuple3(wstr, hstr, nstr)))
       passed
     }
     srTests(bf, fs, Option(validBf))
 
     // functional
     // verify addition path weights appropriately
-    val ueqv = Tuple3(bfcons.wZero, bfcons.hopZero, bfcons.nodeNil)
-    val nopath = Tuple3(bfcons.wInf, bfcons.hopInf, bfcons.nodeInf)
+    val ueqv = Tuple3(BfCons.wZero, BfCons.hopZero, BfCons.nodeNil)
+    val nopath = Tuple3(BfCons.wInf, BfCons.hopInf, BfCons.nodeInf)
     val x = (a: Double) => a.toFloat
 
     val p121 = Tuple3(x(1.0), 2L, 1L)
     val p222 = Tuple3(x(2.0), 2L, 2L)
     val p232 = Tuple3(x(2.0), 3L, 2L)
     val p223 = Tuple3(x(2.0), 2L, 3L)
-    val p22n = Tuple3(x(2.0), 2L, bfcons.nodeNil)
+    val p22n = Tuple3(x(2.0), 2L, BfCons.nodeNil)
     val p341 = Tuple3(x(3.0), 4L, 1L)
     val p342 = Tuple3(x(3.0), 4L, 2L)
 
@@ -286,4 +351,4 @@ class LagSemiringBellmanFordSuite extends FunSuite with Matchers {
 
   }
 }
-
+// scalastyle:on println

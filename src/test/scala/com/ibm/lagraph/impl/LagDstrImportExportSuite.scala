@@ -6,9 +6,9 @@
  * to you under the Apache License, Version 2.0 (the
  * "License"); you may not use this file except in compliance
  * with the License.  You may obtain a copy of the License at
- * 
+ *
  *   http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing,
  * software distributed under the License is distributed on an
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
@@ -21,7 +21,7 @@ package com.ibm.lagraph.impl
 import org.scalatest.FunSuite
 import org.scalatest.Matchers
 import scala.reflect.ClassTag
-import scala.collection.mutable.{ Map => MMap }
+import scala.collection.mutable.{Map => MMap}
 import com.holdenkarau.spark.testing.SharedSparkContext
 import com.ibm.lagraph._
 
@@ -38,7 +38,8 @@ class LagDstrImportExportSuite extends FunSuite with Matchers with SharedSparkCo
   test("LagDstrContext.mFromMap Empty") {
     for (graphSize <- sparseGraphSizes) {
       for (nblock <- nblocks) {
-//        println("LagDstrContext.mFromMap Empty graphSize: >%d<, nblock: >%d<".format(graphSize, nblock))
+//        println("LagDstrContext.mFromMap Empty graphSize: >%d<, nblock: >%d<"
+//          .format(graphSize, nblock))
         val hc: LagContext = LagContext.getLagDstrContext(sc, graphSize, nblock)
         val sparseValue = 0.0
         val mMap = Map[(Long, Long), Double]()
@@ -59,7 +60,8 @@ class LagDstrImportExportSuite extends FunSuite with Matchers with SharedSparkCo
       for (nblock <- nblocks) {
         val lbr = (1L << graphSize) - 1L
         val lbc = (1L << graphSize) - 1L
-//        println("LagDstrContext.mFromMap Sparse graphSize: >%d<, nblock: >%d<".format(graphSize, nblock))
+//        println("LagDstrContext.mFromMap Sparse graphSize: >%d<, nblock: >%d<"
+//          .format(graphSize, nblock))
         val hc: LagContext = LagContext.getLagDstrContext(sc, graphSize, nblock)
         val sparseValue = 0.0
         val testValue = 99.0
@@ -84,12 +86,22 @@ class LagDstrImportExportSuite extends FunSuite with Matchers with SharedSparkCo
         val sparseValue = 0.0
         val rSparseIndex = 0
         val cSparseIndex = 0
-        val mMap = Map((0 until graphSize).map { r => (0 until graphSize).map { c => ((r.toLong, c.toLong), (r * graphSize + c).toDouble) } }.flatten: _*)
+        val mMap = Map((0 until graphSize).map { r =>
+          (0 until graphSize).map { c =>
+            ((r.toLong, c.toLong), (r * graphSize + c).toDouble)
+          }
+        }.flatten: _*)
         val m = hc.mFromMap[Double](mMap, sparseValue)
         val (mMapRes1, sv1) = hc.mToMap(m)
         //    println("mMapRes1: >%s<, sv1: >%s<".format(mMapRes1, sv1))
         assert(mMapRes1.size == graphSize * graphSize - 1)
-        (0 until graphSize).map { r => (0 until graphSize).map { c => if (r != rSparseIndex && c != cSparseIndex) assert(mMapRes1((r, c)) == (r * graphSize + c).toDouble) } }
+        (0 until graphSize).map { r =>
+          (0 until graphSize).map { c =>
+            if (r != rSparseIndex && c != cSparseIndex) {
+              assert(mMapRes1((r, c)) == (r * graphSize + c).toDouble)
+            }
+          }
+        }
         assert(sv1.isInstanceOf[Double])
         assert(sv1 == sparseValue)
 
@@ -121,7 +133,7 @@ class LagDstrImportExportSuite extends FunSuite with Matchers with SharedSparkCo
       }
     }
   }
-  //****
+  // ****
   test("LagDstrContext.vFromMap Empty") {
     for (graphSize <- sparseGraphSizes) {
       for (nblock <- nblocks) {
@@ -167,12 +179,16 @@ class LagDstrImportExportSuite extends FunSuite with Matchers with SharedSparkCo
         val hc: LagContext = LagContext.getLagDstrContext(sc, graphSize, nblock)
         val sparseValue = 0.0
         val sparseIndex = 0
-        val vMap = Map((0 until graphSize).map { r => (r.toLong, r.toDouble) }: _*)
+        val vMap = Map((0 until graphSize).map { r =>
+          (r.toLong, r.toDouble)
+        }: _*)
         val v = hc.vFromMap[Double](vMap, sparseValue)
         val (vMapRes1, sv1) = hc.vToMap(v)
         //    println("vMapRes1: >%s<, sv1: >%s<".format(vMapRes1, sv1))
         assert(vMapRes1.size == graphSize - 1)
-        (0 until graphSize).map { r => if (r != sparseIndex) assert(vMapRes1(r) == r.toDouble) }
+        (0 until graphSize).map { r =>
+          if (r != sparseIndex) assert(vMapRes1(r) == r.toDouble)
+        }
         assert(sv1.isInstanceOf[Double])
         assert(sv1 == sparseValue)
 
@@ -184,7 +200,8 @@ class LagDstrImportExportSuite extends FunSuite with Matchers with SharedSparkCo
   test("LagDstrContext.mToRcvRdd Empty") {
     for (graphSize <- sparseGraphSizes) {
       for (nblock <- nblocks) {
-        val hc: LagDstrContext = LagContext.getLagDstrContext(sc, graphSize, nblock)
+        val hc: LagDstrContext =
+          LagContext.getLagDstrContext(sc, graphSize, nblock)
         val sparseValue = 0.0
         val mMap = Map[(Long, Long), Double]()
         val m = hc.mFromMap[Double](mMap, sparseValue)
@@ -202,7 +219,8 @@ class LagDstrImportExportSuite extends FunSuite with Matchers with SharedSparkCo
       for (nblock <- nblocks) {
         val lbr = (1L << graphSize) - 1L
         val lbc = (1L << graphSize) - 1L
-        val hc: LagDstrContext = LagContext.getLagDstrContext(sc, graphSize, nblock)
+        val hc: LagDstrContext =
+          LagContext.getLagDstrContext(sc, graphSize, nblock)
         val sparseValue = 0.0
         val testValue = 99.0
         val mMap = Map[(Long, Long), Double]((lar, lac) -> testValue, (lbr, lbc) -> testValue)
@@ -221,17 +239,28 @@ class LagDstrImportExportSuite extends FunSuite with Matchers with SharedSparkCo
   test("LagDstrContext.mToRcvRdd Dense") {
     for (graphSize <- denseGraphSizes) {
       for (nblock <- nblocks) {
-        val hc: LagDstrContext = LagContext.getLagDstrContext(sc, graphSize, nblock)
+        val hc: LagDstrContext =
+          LagContext.getLagDstrContext(sc, graphSize, nblock)
         val sparseValue = 0.0
         val rSparseIndex = 0
         val cSparseIndex = 0
-        val mMap = Map((0 until graphSize).map { r => (0 until graphSize).map { c => ((r.toLong, c.toLong), (r * graphSize + c).toDouble) } }.flatten: _*)
+        val mMap = Map((0 until graphSize).map { r =>
+          (0 until graphSize).map { c =>
+            ((r.toLong, c.toLong), (r * graphSize + c).toDouble)
+          }
+        }.flatten: _*)
         val m = hc.mFromMap[Double](mMap, sparseValue)
         val (mMapRes1Rdd, sv1) = hc.mToRcvRdd(m)
         val mMapRes1 = mMapRes1Rdd.collect.toMap
         //    println("mMapRes1: >%s<, sv1: >%s<".format(mMapRes1, sv1))
         assert(mMapRes1.size == graphSize * graphSize - 1)
-        (0 until graphSize).map { r => (0 until graphSize).map { c => if (r != rSparseIndex && c != cSparseIndex) assert(mMapRes1((r, c)) == (r * graphSize + c).toDouble) } }
+        (0 until graphSize).map { r =>
+          (0 until graphSize).map { c =>
+            if (r != rSparseIndex && c != cSparseIndex) {
+              assert(mMapRes1((r, c)) == (r * graphSize + c).toDouble)
+            }
+          }
+        }
         assert(sv1.isInstanceOf[Double])
         assert(sv1 == sparseValue)
       }
@@ -239,4 +268,3 @@ class LagDstrImportExportSuite extends FunSuite with Matchers with SharedSparkCo
   }
   // TOOD add tests for vToRvRdd
 }
-

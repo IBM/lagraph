@@ -6,9 +6,9 @@
  * to you under the Apache License, Version 2.0 (the
  * "License"); you may not use this file except in compliance
  * with the License.  You may obtain a copy of the License at
- * 
+ *
  *   http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing,
  * software distributed under the License is distributed on an
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
@@ -17,34 +17,37 @@
  * under the License.
  */
 package com.ibm.lagraph.impl
+// TODO get rid of printlns
+// scalastyle:off println
 
-import scala.reflect.{ ClassTag, classTag }
+import scala.reflect.{ClassTag, classTag}
 
 import annotation.tailrec
-import scala.math.{ min, max }
-import scala.{ specialized => spec }
+import scala.math.{min, max}
+import scala.{specialized => spec}
 import com.ibm.lagraph.LagUtils
 
-final class GpiBuffer[@spec(Int) A: ClassTag](
-    val elems: Array[A], val length: Int) extends Serializable {
+final class GpiBuffer[@spec(Int) A: ClassTag](val elems: Array[A], val length: Int)
+    extends Serializable {
 
   def this(elems: Array[A]) = {
     this(elems, elems.length)
   }
 
-  override def equals(o: Any) = o match {
+  override def equals(o: Any): Boolean = o match {
     case that: GpiBuffer[A] => {
-      if (this.hashCode == that.hashCode)
+      if (this.hashCode == that.hashCode) {
         true
-      else if (that.length != this.length)
+      } else if (that.length != this.length) {
         false
-      else {
+      } else {
         var doesmatch = true
         var i = 0
         val k = this.length
         while (doesmatch && i < k) {
-          if (this.elems(i) != that.elems(i))
+          if (this.elems(i) != that.elems(i)) {
             doesmatch = false
+          }
           i += 1
         }
         doesmatch
@@ -52,13 +55,14 @@ final class GpiBuffer[@spec(Int) A: ClassTag](
     }
     case _ => false
   }
-  override def hashCode = elems.hashCode
+  override def hashCode: Int = elems.hashCode
 
   //  def length = elems.length
 
-  def toList = {
+  def toList: List[A] = {
     @tailrec
-    def f(i: Int, as: List[A]): List[A] = if (i < 0) as else f(i - 1, apply(i) :: as)
+    def f(i: Int, as: List[A]): List[A] =
+      if (i < 0) as else f(i - 1, apply(i) :: as)
     f(length - 1, Nil)
   }
   def toVector: Vector[A] = Vector(toArray: _*)
@@ -71,7 +75,7 @@ final class GpiBuffer[@spec(Int) A: ClassTag](
     }
   }
 
-  override def toString = {
+  override def toString: String = {
     val sb = new StringBuilder()
     sb.append("GpiBuffer(")
     if (length > 0) {
@@ -88,13 +92,13 @@ final class GpiBuffer[@spec(Int) A: ClassTag](
   }
 
   // ****
-  def toArray = {
+  def toArray: Array[A] = {
     val as = Array.ofDim[A](length)
     System.arraycopy(elems, 0, as, 0, length)
     as
   }
   def apply(i: Int): A = elems(i)
-  def map[@spec(Int) B: ClassTag](f: A => B) = {
+  def map[@spec(Int) B: ClassTag](f: A => B): GpiBuffer[B] = {
     val bs = Array.ofDim[B](this.length)
     var i = 0
     val k = this.length
@@ -116,7 +120,7 @@ final class GpiBuffer[@spec(Int) A: ClassTag](
     this.foreach(x => if (p(x)) cnt += 1)
     cnt
   }
-  def size = length
+  def size: Int = length
   def isEmpty: Boolean = length == 0
   def last: A = {
     if (isEmpty) throw new UnsupportedOperationException("GpiBuffer: empty")
@@ -135,7 +139,7 @@ final class GpiBuffer[@spec(Int) A: ClassTag](
     new GpiBuffer(bs)
   }
 
-  def zipWithIndex() = {
+  def zipWithIndex(): GpiBuffer[(A, Int)] = {
     val bs = Array.ofDim[(A, Int)](this.length)
 
     var i = 0
@@ -146,7 +150,7 @@ final class GpiBuffer[@spec(Int) A: ClassTag](
     }
     new GpiBuffer(bs)
   }
-  def updated(index: Int, elem: A) = {
+  def updated(index: Int, elem: A): GpiBuffer[A] = {
     val bs = Array.ofDim[A](this.length)
     var i = 0
     val k = index
@@ -163,7 +167,7 @@ final class GpiBuffer[@spec(Int) A: ClassTag](
     }
     new GpiBuffer(bs)
   }
-  def inserted(index: Int, elem: A) = {
+  def inserted(index: Int, elem: A): GpiBuffer[A] = {
     val bs = Array.ofDim[A](this.length + 1)
     var i = 0
     val k = index
@@ -183,7 +187,7 @@ final class GpiBuffer[@spec(Int) A: ClassTag](
     new GpiBuffer(bs)
   }
 
-  def extend(cnt: Int, elem: A) = {
+  def extend(cnt: Int, elem: A): GpiBuffer[A] = {
     val bs = Array.ofDim[A](this.length + cnt)
     var i = 0
     val k = this.length
@@ -202,8 +206,10 @@ final class GpiBuffer[@spec(Int) A: ClassTag](
   @throws(classOf[java.io.IOException])
   private def sizeofElem(): Int = {
     val obj = elems
-    val byteOutputStream: java.io.ByteArrayOutputStream = new java.io.ByteArrayOutputStream();
-    val objectOutputStream: java.io.ObjectOutputStream = new java.io.ObjectOutputStream(byteOutputStream);
+    val byteOutputStream: java.io.ByteArrayOutputStream =
+      new java.io.ByteArrayOutputStream();
+    val objectOutputStream: java.io.ObjectOutputStream =
+      new java.io.ObjectOutputStream(byteOutputStream);
     objectOutputStream.writeObject(obj);
     objectOutputStream.flush();
     objectOutputStream.close();
@@ -214,10 +220,9 @@ final class GpiBuffer[@spec(Int) A: ClassTag](
 // TODO deal with boxing
 object GpiBuffer {
 
-  def rvSparseBuffersToDenseBuffer[@spec(Int) B: ClassTag](
-    rv: (GpiBuffer[Int], GpiBuffer[B]),
-    sparseValue: B,
-    size: Int): GpiBuffer[B] = {
+  def rvSparseBuffersToDenseBuffer[@spec(Int) B: ClassTag](rv: (GpiBuffer[Int], GpiBuffer[B]),
+                                                           sparseValue: B,
+                                                           size: Int): GpiBuffer[B] = {
     val t0 = System.nanoTime()
     val dbs = Array.fill(size)(sparseValue)
     var i = 0
@@ -228,15 +233,17 @@ object GpiBuffer {
     }
     val t1 = System.nanoTime()
     val t01 = LagUtils.tt(t0, t1)
-    if (false) println("GpiBuffer: rvSparseBuffersToDenseBuffer: time: >%.3f< s".format(t01))
+    if (false) {
+      println("GpiBuffer: rvSparseBuffersToDenseBuffer: time: >%.3f< s".format(t01))
+    }
     GpiBuffer(dbs)
   }
 
   def rvSeqToSparseBuffers[@spec(Int) B: ClassTag](
-    rseq: Seq[Int],
-    vseq: Seq[B],
-    sparseValue: B,
-    denseCount: Int): (GpiBuffer[Int], GpiBuffer[B]) = {
+      rseq: Seq[Int],
+      vseq: Seq[B],
+      sparseValue: B,
+      denseCount: Int): (GpiBuffer[Int], GpiBuffer[B]) = {
     val t0 = System.nanoTime()
     require(rseq.length == vseq.length)
     val rbs = Array.ofDim[Int](denseCount)
@@ -255,15 +262,16 @@ object GpiBuffer {
     require(j == denseCount)
     val t1 = System.nanoTime()
     val t01 = LagUtils.tt(t0, t1)
-    if (false) println("GpiBuffer: rvSeqToSparseBuffers: time: >%.3f< s".format(t01))
+    if (false) {
+      println("GpiBuffer: rvSeqToSparseBuffers: time: >%.3f< s".format(t01))
+    }
     (GpiBuffer(rbs), GpiBuffer(vbs))
   }
 
-  def rvSeqToDenseBuffer[@spec(Int) B: ClassTag](
-    rseq: Seq[Int],
-    vseq: Seq[B],
-    sparseValue: B,
-    len: Int): GpiBuffer[B] = {
+  def rvSeqToDenseBuffer[@spec(Int) B: ClassTag](rseq: Seq[Int],
+                                                 vseq: Seq[B],
+                                                 sparseValue: B,
+                                                 len: Int): GpiBuffer[B] = {
     val t0 = System.nanoTime()
     require(rseq.length == vseq.length)
     val vbs = Array.fill(len)(sparseValue)
@@ -274,14 +282,16 @@ object GpiBuffer {
     }
     val t1 = System.nanoTime()
     val t01 = LagUtils.tt(t0, t1)
-    if (false) println("GpiBuffer: rvSeqToDenseBuffer: time: >%.3f< s".format(t01))
+    if (false) {
+      println("GpiBuffer: rvSeqToDenseBuffer: time: >%.3f< s".format(t01))
+    }
     GpiBuffer(vbs)
   }
 
   def rvDenseBufferToSparseBuffer[@spec(Int) B: ClassTag](
-    dbs: GpiBuffer[B],
-    denseCount: Int,
-    sparseValue: B): (GpiBuffer[Int], GpiBuffer[B]) = {
+      dbs: GpiBuffer[B],
+      denseCount: Int,
+      sparseValue: B): (GpiBuffer[Int], GpiBuffer[B]) = {
     val t0 = System.nanoTime()
 
     val rbs = Array.ofDim[Int](denseCount)
@@ -298,15 +308,15 @@ object GpiBuffer {
     }
     val t1 = System.nanoTime()
     val t01 = LagUtils.tt(t0, t1)
-    //x    println("GpiBuffer: rvDenseBufferToSparseBuffer: time: >%.3f< s".format(t01))
+    // x    println("GpiBuffer: rvDenseBufferToSparseBuffer: time: >%.3f< s".format(t01))
     (GpiBuffer(rbs), GpiBuffer(vbs))
   }
 
   def gpiMapDenseBufferToDenseBuffer[@spec(Int) A: ClassTag, @spec(Int) B: ClassTag](
-    //  def gpiMapDenseBufferToDenseBuffer[@spec(Int) A: ClassTag, @spec(Int) B](
-    dbs: GpiBuffer[A],
-    sparseValue: B,
-    f: A => B): (GpiBuffer[B], Int, Int) = {
+      //  def gpiMapDenseBufferToDenseBuffer[@spec(Int) A: ClassTag, @spec(Int) B](
+      dbs: GpiBuffer[A],
+      sparseValue: B,
+      f: A => B): (GpiBuffer[B], Int, Int) = {
     //    f: A => B)(implicit eA: ClassTag[A],  eB:ClassTag[B]): (GpiBuffer[B], Int, Int) = {
     val xA = classTag[A]
     val xB = classTag[B]
@@ -329,19 +339,21 @@ object GpiBuffer {
       if (xt01 > xMax) xMax = xt01
       if (xt01 < xMin) xMin = xt01
     }
-    //x    println("    GpiBuffer: gpiMapDenseBufferToDenseBuffer: t0a: >%.3f<, k: >%d<, newDenseCount: >%d<, A:>%s<, B:>%s<, xMin: >%.6f<, xMax: >%.6f<".format(t0a, k, newDenseCount, xA, xB, xMin, xMax))
+    // x    println("    GpiBuffer:
+    //      gpiMapDenseBufferToDenseBuffer: t0a: >%.3f<, k: >%d<, newDenseCount: >%d<, A:>%s<,
+    //      B:>%s<, xMin: >%.6f<, xMax: >%.6f<".format(t0a, k, newDenseCount, xA, xB, xMin, xMax))
     val t1 = System.nanoTime()
     val t01 = LagUtils.tt(t0, t1)
-    //x    println("GpiBuffer: gpiMapDenseBufferToDenseBuffer: time: >%.3f< s".format(t01))
+    // x    println("GpiBuffer: gpiMapDenseBufferToDenseBuffer: time: >%.3f< s".format(t01))
     (GpiBuffer(bs), newDenseCount, k)
   }
 
   def gpiMapSparseBuffersToDenseBuffer[@spec(Int) A: ClassTag, @spec(Int) B: ClassTag](
-    rvA: (GpiBuffer[Int], GpiBuffer[A]),
-    len: Int,
-    sparseValueA: A,
-    sparseValueB: B,
-    f: A => B): (GpiBuffer[B], Int, Int) = {
+      rvA: (GpiBuffer[Int], GpiBuffer[A]),
+      len: Int,
+      sparseValueA: A,
+      sparseValueB: B,
+      f: A => B): (GpiBuffer[B], Int, Int) = {
     val t0 = System.nanoTime()
     val lenA = rvA._1.length
     val vB = Array.ofDim[B](len)
@@ -363,14 +375,15 @@ object GpiBuffer {
     require(iiA == lenA)
     val t1 = System.nanoTime()
     val t01 = LagUtils.tt(t0, t1)
-    //x    println("GpiBuffer: gpiMapSparseBuffersToDenseBuffer: time: >%.3f<, denseCountB: >%d<, ops: >%d<".format(t01, denseCountB, iiA))
+    // x    println("GpiBuffer: gpiMapSparseBuffersToDenseBuffer: time: >%.3f<,
+    //      denseCountB: >%d<, ops: >%d<".format(t01, denseCountB, iiA))
     (GpiBuffer(vB), denseCountB, iiA)
   }
 
   def gpiMapSparseBuffersToSparseBuffers[@spec(Int) A: ClassTag, @spec(Int) B: ClassTag](
-    rv: (GpiBuffer[Int], GpiBuffer[A]),
-    sparseValue: B,
-    f: A => B): (GpiBuffer[Int], GpiBuffer[B], Int) = {
+      rv: (GpiBuffer[Int], GpiBuffer[A]),
+      sparseValue: B,
+      f: A => B): (GpiBuffer[Int], GpiBuffer[B], Int) = {
     val t0 = System.nanoTime()
     val len = rv._1.length
     val rs = Array.ofDim[Int](len)
@@ -388,18 +401,20 @@ object GpiBuffer {
     }
     val t1 = System.nanoTime()
     val t01 = LagUtils.tt(t0, t1)
-    //x    println("GpiBuffer: gpiMapSparseBuffersToSparseBuffers: time: >%.3f< s".format(t01))
+    // x    println("GpiBuffer: gpiMapSparseBuffersToSparseBuffers: time: >%.3f< s".format(t01))
     (GpiBuffer(rs, j), GpiBuffer(vs, j), k)
   }
 
-  def gpiZipSparseSparseToDense[@spec(Int) A: ClassTag, @spec(Int) B: ClassTag, @spec(Int) C: ClassTag](
-    rvA: (GpiBuffer[Int], GpiBuffer[A]),
-    rvB: (GpiBuffer[Int], GpiBuffer[B]),
-    len: Int,
-    sparseValueA: A,
-    sparseValueB: B,
-    sparseValueC: C,
-    f: (A, B) => C): (GpiBuffer[C], Int, Int) = {
+  def gpiZipSparseSparseToDense[@spec(Int) A: ClassTag,
+                                @spec(Int) B: ClassTag,
+                                @spec(Int) C: ClassTag](
+      rvA: (GpiBuffer[Int], GpiBuffer[A]),
+      rvB: (GpiBuffer[Int], GpiBuffer[B]),
+      len: Int,
+      sparseValueA: A,
+      sparseValueB: B,
+      sparseValueC: C,
+      f: (A, B) => C): (GpiBuffer[C], Int, Int) = {
     val t0 = System.nanoTime()
     val lenA = rvA._1.length
     val lenB = rvB._1.length
@@ -432,18 +447,22 @@ object GpiBuffer {
     }
     val t1 = System.nanoTime()
     val t01 = LagUtils.tt(t0, t1)
-    if (false) println("GpiBuffer: gpiZipSparseSparseToDense: time: >%.3f< s".format(t01))
+    if (false) {
+      println("GpiBuffer: gpiZipSparseSparseToDense: time: >%.3f< s".format(t01))
+    }
     (GpiBuffer(vC), denseCountC, len)
   }
 
-  def gpiZipSparseSparseToSparse[@spec(Int) A: ClassTag, @spec(Int) B: ClassTag, @spec(Int) C: ClassTag](
-    rvA: (GpiBuffer[Int], GpiBuffer[A]),
-    rvB: (GpiBuffer[Int], GpiBuffer[B]),
-    len: Int,
-    sparseValueA: A,
-    sparseValueB: B,
-    sparseValueC: C,
-    f: (A, B) => C): ((GpiBuffer[Int], GpiBuffer[C]), Int, Int) = {
+  def gpiZipSparseSparseToSparse[@spec(Int) A: ClassTag,
+                                 @spec(Int) B: ClassTag,
+                                 @spec(Int) C: ClassTag](
+      rvA: (GpiBuffer[Int], GpiBuffer[A]),
+      rvB: (GpiBuffer[Int], GpiBuffer[B]),
+      len: Int,
+      sparseValueA: A,
+      sparseValueB: B,
+      sparseValueC: C,
+      f: (A, B) => C): ((GpiBuffer[Int], GpiBuffer[C]), Int, Int) = {
     require(sparseValueA == sparseValueB)
     val t0 = System.nanoTime()
     val lenA = rvA._1.length
@@ -471,7 +490,11 @@ object GpiBuffer {
       }
       val t1 = System.nanoTime()
       val t01 = LagUtils.tt(t0, t1)
-      if (false) println("GpiBuffer: gpiZipSparseSparseToSparse: lenA < lenB: time: >%.3f< s".format(t01))
+      if (false) {
+        println(
+          "GpiBuffer: gpiZipSparseSparseToSparse: lenA < lenB: time: >%.3f< s"
+            .format(t01))
+      }
       ((GpiBuffer(rvCr, iiC), GpiBuffer(rvCv, iiC)), iiC, iiO)
     } else {
       val rvCr = Array.ofDim[Int](lenB)
@@ -496,19 +519,24 @@ object GpiBuffer {
       }
       val t1 = System.nanoTime()
       val t01 = LagUtils.tt(t0, t1)
-      if (false) println("GpiBuffer: gpiZipSparseSparseToSparse: lenA >= lenB: time: >%.3f< s".format(t01))
+      if (false) {
+        println(
+          "GpiBuffer: gpiZipSparseSparseToSparse: lenA >= lenB: time: >%.3f< s"
+            .format(t01))
+      }
       ((GpiBuffer(rvCr, iiC), GpiBuffer(rvCv, iiC)), iiC, iiO)
     }
   }
 
-  def gpiZipSparseDenseToDense[@spec(Int) A: ClassTag, @spec(Int) B: ClassTag, @spec(Int) C: ClassTag](
-    rvA: (GpiBuffer[Int], GpiBuffer[A]),
-    vB: GpiBuffer[B],
-    len: Int,
-    sparseValueA: A,
-    sparseValueB: B,
-    sparseValueC: C,
-    f: (A, B) => C): (GpiBuffer[C], Int, Int) = {
+  def gpiZipSparseDenseToDense[@spec(Int) A: ClassTag,
+                               @spec(Int) B: ClassTag,
+                               @spec(Int) C: ClassTag](rvA: (GpiBuffer[Int], GpiBuffer[A]),
+                                                       vB: GpiBuffer[B],
+                                                       len: Int,
+                                                       sparseValueA: A,
+                                                       sparseValueB: B,
+                                                       sparseValueC: C,
+                                                       f: (A, B) => C): (GpiBuffer[C], Int, Int) = {
     val t0 = System.nanoTime()
     val lenA = rvA._1.length
     val lenB = vB.length
@@ -530,18 +558,21 @@ object GpiBuffer {
     }
     val t1 = System.nanoTime()
     val t01 = LagUtils.tt(t0, t1)
-    if (false) println("GpiBuffer: gpiZipSparseDenseToDense: time: >%.3f< s".format(t01))
+    if (false) {
+      println("GpiBuffer: gpiZipSparseDenseToDense: time: >%.3f< s".format(t01))
+    }
     (GpiBuffer(vC), denseCountC, len)
   }
 
-  def gpiZipDenseSparseToDense[@spec(Int) A: ClassTag, @spec(Int) B: ClassTag, @spec(Int) C: ClassTag](
-    vA: GpiBuffer[A],
-    rvB: (GpiBuffer[Int], GpiBuffer[B]),
-    len: Int,
-    sparseValueA: A,
-    sparseValueB: B,
-    sparseValueC: C,
-    f: (A, B) => C): (GpiBuffer[C], Int, Int) = {
+  def gpiZipDenseSparseToDense[@spec(Int) A: ClassTag,
+                               @spec(Int) B: ClassTag,
+                               @spec(Int) C: ClassTag](vA: GpiBuffer[A],
+                                                       rvB: (GpiBuffer[Int], GpiBuffer[B]),
+                                                       len: Int,
+                                                       sparseValueA: A,
+                                                       sparseValueB: B,
+                                                       sparseValueC: C,
+                                                       f: (A, B) => C): (GpiBuffer[C], Int, Int) = {
     val t0 = System.nanoTime()
     val lenA = vA.length
     val lenB = rvB._1.length
@@ -563,18 +594,22 @@ object GpiBuffer {
     }
     val t1 = System.nanoTime()
     val t01 = LagUtils.tt(t0, t1)
-    if (false) println("GpiBuffer: gpiZipDenseSparseToDense: time: >%.3f< s".format(t01))
+    if (false) {
+      println("GpiBuffer: gpiZipDenseSparseToDense: time: >%.3f< s".format(t01))
+    }
     (GpiBuffer(vC), denseCountC, lenA)
   }
 
-  def gpiZipDenseSparseToSparse[@spec(Int) A: ClassTag, @spec(Int) B: ClassTag, @spec(Int) C: ClassTag](
-    vA: GpiBuffer[A],
-    rvB: (GpiBuffer[Int], GpiBuffer[B]),
-    len: Int,
-    sparseValueA: A,
-    sparseValueB: B,
-    sparseValueC: C,
-    f: (A, B) => C): ((GpiBuffer[Int], GpiBuffer[C]), Int, Int) = {
+  def gpiZipDenseSparseToSparse[@spec(Int) A: ClassTag,
+                                @spec(Int) B: ClassTag,
+                                @spec(Int) C: ClassTag](
+      vA: GpiBuffer[A],
+      rvB: (GpiBuffer[Int], GpiBuffer[B]),
+      len: Int,
+      sparseValueA: A,
+      sparseValueB: B,
+      sparseValueC: C,
+      f: (A, B) => C): ((GpiBuffer[Int], GpiBuffer[C]), Int, Int) = {
     val t0 = System.nanoTime()
     val lenA = vA.length
     val lenB = rvB._1.length
@@ -592,18 +627,22 @@ object GpiBuffer {
     }
     val t1 = System.nanoTime()
     val t01 = LagUtils.tt(t0, t1)
-    if (false) println("GpiBuffer: gpiZipDenseSparseToSparse: time: >%.3f< s".format(t01))
+    if (false) {
+      println("GpiBuffer: gpiZipDenseSparseToSparse: time: >%.3f< s".format(t01))
+    }
     ((GpiBuffer(rvCr, iiC), GpiBuffer(rvCv, iiC)), iiC, lenB)
   }
 
-  def gpiZipSparseDenseToSparse[@spec(Int) A: ClassTag, @spec(Int) B: ClassTag, @spec(Int) C: ClassTag](
-    rvA: (GpiBuffer[Int], GpiBuffer[A]),
-    vB: GpiBuffer[B],
-    len: Int,
-    sparseValueA: A,
-    sparseValueB: B,
-    sparseValueC: C,
-    f: (A, B) => C): ((GpiBuffer[Int], GpiBuffer[C]), Int, Int) = {
+  def gpiZipSparseDenseToSparse[@spec(Int) A: ClassTag,
+                                @spec(Int) B: ClassTag,
+                                @spec(Int) C: ClassTag](
+      rvA: (GpiBuffer[Int], GpiBuffer[A]),
+      vB: GpiBuffer[B],
+      len: Int,
+      sparseValueA: A,
+      sparseValueB: B,
+      sparseValueC: C,
+      f: (A, B) => C): ((GpiBuffer[Int], GpiBuffer[C]), Int, Int) = {
     val t0 = System.nanoTime()
     val lenA = rvA._1.length
     val lenB = vB.length
@@ -621,18 +660,21 @@ object GpiBuffer {
     }
     val t1 = System.nanoTime()
     val t01 = LagUtils.tt(t0, t1)
-    if (false) println("GpiBuffer: gpiZipSparseDenseToSparse: time: >%.3f< s".format(t01))
+    if (false) {
+      println("GpiBuffer: gpiZipSparseDenseToSparse: time: >%.3f< s".format(t01))
+    }
     ((GpiBuffer(rvCr, iiC), GpiBuffer(rvCv, iiC)), iiC, lenA)
   }
 
-  def gpiZipDenseDenseToDense[@spec(Int) A: ClassTag, @spec(Int) B: ClassTag, @spec(Int) C: ClassTag](
-    vA: GpiBuffer[A],
-    vB: GpiBuffer[B],
-    len: Int,
-    sparseValueA: A,
-    sparseValueB: B,
-    sparseValueC: C,
-    f: (A, B) => C): (GpiBuffer[C], Int, Int) = {
+  def gpiZipDenseDenseToDense[@spec(Int) A: ClassTag,
+                              @spec(Int) B: ClassTag,
+                              @spec(Int) C: ClassTag](vA: GpiBuffer[A],
+                                                      vB: GpiBuffer[B],
+                                                      len: Int,
+                                                      sparseValueA: A,
+                                                      sparseValueB: B,
+                                                      sparseValueC: C,
+                                                      f: (A, B) => C): (GpiBuffer[C], Int, Int) = {
     val t0 = System.nanoTime()
     val lenA = vA.length
     val lenB = vB.length
@@ -650,19 +692,21 @@ object GpiBuffer {
     }
     val t1 = System.nanoTime()
     val t01 = LagUtils.tt(t0, t1)
-    if (false) println("GpiBuffer: gpiZipDenseDenseToDense: time: >%.3f< s".format(t01))
+    if (false) {
+      println("GpiBuffer: gpiZipDenseDenseToDense: time: >%.3f< s".format(t01))
+    }
     (GpiBuffer(vC), denseCountC, len)
   }
 
   // ****
   // ** zip with index vector
   def gpiZipSparseWithIndexToSparse[@spec(Int) A: ClassTag, @spec(Int) C: ClassTag](
-    rvA: (GpiBuffer[Int], GpiBuffer[A]),
-    len: Int,
-    base: Long,
-    sparseValueA: A,
-    sparseValueC: C,
-    f: (A, Long) => C): ((GpiBuffer[Int], GpiBuffer[C]), Int, Int) = {
+      rvA: (GpiBuffer[Int], GpiBuffer[A]),
+      len: Int,
+      base: Long,
+      sparseValueA: A,
+      sparseValueC: C,
+      f: (A, Long) => C): ((GpiBuffer[Int], GpiBuffer[C]), Int, Int) = {
     val t0 = System.nanoTime()
     val lenA = rvA._1.length
     val rvCr = Array.ofDim[Int](lenA)
@@ -677,17 +721,19 @@ object GpiBuffer {
     }
     val t1 = System.nanoTime()
     val t01 = LagUtils.tt(t0, t1)
-    if (false) println("GpiBuffer: gpiZipSparseWithIndexToSparse: time: >%.3f< s".format(t01))
+    if (false) {
+      println("GpiBuffer: gpiZipSparseWithIndexToSparse: time: >%.3f< s".format(t01))
+    }
     ((GpiBuffer(rvCr, iiC), GpiBuffer(rvCv, iiC)), iiC, lenA)
   }
 
   def gpiZipSparseWithIndexToDense[@spec(Int) A: ClassTag, @spec(Int) C: ClassTag](
-    rvA: (GpiBuffer[Int], GpiBuffer[A]),
-    len: Int,
-    base: Long,
-    sparseValueA: A,
-    sparseValueC: C,
-    f: (A, Long) => C): (GpiBuffer[C], Int, Int) = {
+      rvA: (GpiBuffer[Int], GpiBuffer[A]),
+      len: Int,
+      base: Long,
+      sparseValueA: A,
+      sparseValueC: C,
+      f: (A, Long) => C): (GpiBuffer[C], Int, Int) = {
     val t0 = System.nanoTime()
     val lenA = rvA._1.length
     val vC = Array.ofDim[C](len)
@@ -706,17 +752,19 @@ object GpiBuffer {
     }
     val t1 = System.nanoTime()
     val t01 = LagUtils.tt(t0, t1)
-    if (false) println("GpiBuffer: gpiZipSparseWithIndexToDense: time: >%.3f< s".format(t01))
+    if (false) {
+      println("GpiBuffer: gpiZipSparseWithIndexToDense: time: >%.3f< s".format(t01))
+    }
     (GpiBuffer(vC), denseCountC, len)
   }
 
   def gpiZipDenseWithIndexToDense[@spec(Int) A: ClassTag, @spec(Int) C: ClassTag](
-    vA: GpiBuffer[A],
-    len: Int,
-    base: Long,
-    sparseValueA: A,
-    sparseValueC: C,
-    f: (A, Long) => C): (GpiBuffer[C], Int, Int) = {
+      vA: GpiBuffer[A],
+      len: Int,
+      base: Long,
+      sparseValueA: A,
+      sparseValueC: C,
+      f: (A, Long) => C): (GpiBuffer[C], Int, Int) = {
     val t0 = System.nanoTime()
     val lenA = vA.length
     val vC = Array.ofDim[C](len)
@@ -731,32 +779,37 @@ object GpiBuffer {
     }
     val t1 = System.nanoTime()
     val t01 = LagUtils.tt(t0, t1)
-    if (false) println("GpiBuffer: gpiZipDenseWithIndexToDense: time: >%.3f< s".format(t01))
+    if (false) {
+      println("GpiBuffer: gpiZipDenseWithIndexToDense: time: >%.3f< s".format(t01))
+    }
     (GpiBuffer(vC), denseCountC, len)
   }
 
   // ****
   // ** zip with index matrix
   def gpiZipSparseWithIndexToSparseMatrix[@spec(Int) A: ClassTag, @spec(Int) C: ClassTag](
-    rvA: (GpiBuffer[Int], GpiBuffer[A]),
-    len: Int,
-    rowIndex: Long,
-    base: Long,
-    visitDiagonalsOpt: Option[A],
-    sparseValueA: A,
-    sparseValueC: C,
-    f: (A, (Long, Long)) => C): ((GpiBuffer[Int], GpiBuffer[C]), Int, Int) = {
+      rvA: (GpiBuffer[Int], GpiBuffer[A]),
+      len: Int,
+      rowIndex: Long,
+      base: Long,
+      visitDiagonalsOpt: Option[A],
+      sparseValueA: A,
+      sparseValueC: C,
+      f: (A, (Long, Long)) => C): ((GpiBuffer[Int], GpiBuffer[C]), Int, Int) = {
     val visitDiagonals = visitDiagonalsOpt.isDefined
     val t0 = System.nanoTime()
     val lenA = rvA._1.length
-    val rvCr = if (visitDiagonals) Array.ofDim[Int](lenA + 1) else Array.ofDim[Int](lenA)
-    val rvCv = if (visitDiagonals) Array.ofDim[C](lenA + 1) else Array.ofDim[C](lenA)
+    val rvCr =
+      if (visitDiagonals) Array.ofDim[Int](lenA + 1) else Array.ofDim[Int](lenA)
+    val rvCv =
+      if (visitDiagonals) Array.ofDim[C](lenA + 1) else Array.ofDim[C](lenA)
     var iiA = 0
     var iiC = 0
     var diagonalProcessed = false
-    if ((rowIndex < base) || (rowIndex >= (base + len)))
+    if ((rowIndex < base) || (rowIndex >= (base + len))) {
       // don't bother if diagonal doesn't fall in this block
       diagonalProcessed = true
+    }
     while (iiA < lenA) {
       val abscol = rvA._1(iiA).toLong + base
       if (visitDiagonals && !diagonalProcessed && (abscol == rowIndex)) {
@@ -796,18 +849,20 @@ object GpiBuffer {
     require(!visitDiagonals || diagonalProcessed)
     val t1 = System.nanoTime()
     val t01 = LagUtils.tt(t0, t1)
-    if (false) println("GpiBuffer: gpiZipSparseWithIndexToSparseMatrix: time: >%.3f< s".format(t01))
+    if (false) {
+      println("GpiBuffer: gpiZipSparseWithIndexToSparseMatrix: time: >%.3f< s".format(t01))
+    }
     ((GpiBuffer(rvCr, iiC), GpiBuffer(rvCv, iiC)), iiC, iiC)
   }
 
   def gpiZipSparseWithIndexToDenseMatrix[@spec(Int) A: ClassTag, @spec(Int) C: ClassTag](
-    rvA: (GpiBuffer[Int], GpiBuffer[A]),
-    len: Int,
-    rowIndex: Long,
-    base: Long,
-    sparseValueA: A,
-    sparseValueC: C,
-    f: (A, (Long, Long)) => C): (GpiBuffer[C], Int, Int) = {
+      rvA: (GpiBuffer[Int], GpiBuffer[A]),
+      len: Int,
+      rowIndex: Long,
+      base: Long,
+      sparseValueA: A,
+      sparseValueC: C,
+      f: (A, (Long, Long)) => C): (GpiBuffer[C], Int, Int) = {
     val t0 = System.nanoTime()
     val lenA = rvA._1.length
     val vC = Array.ofDim[C](len)
@@ -826,18 +881,20 @@ object GpiBuffer {
     }
     val t1 = System.nanoTime()
     val t01 = LagUtils.tt(t0, t1)
-    if (false) println("GpiBuffer: gpiZipSparseWithIndexToDenseMatrix: time: >%.3f< s".format(t01))
+    if (false) {
+      println("GpiBuffer: gpiZipSparseWithIndexToDenseMatrix: time: >%.3f< s".format(t01))
+    }
     (GpiBuffer(vC), denseCountC, len)
   }
 
   def gpiZipDenseWithIndexToDenseMatrix[@spec(Int) A: ClassTag, @spec(Int) C: ClassTag](
-    vA: GpiBuffer[A],
-    len: Int,
-    rowIndex: Long,
-    base: Long,
-    sparseValueA: A,
-    sparseValueC: C,
-    f: (A, (Long, Long)) => C): (GpiBuffer[C], Int, Int) = {
+      vA: GpiBuffer[A],
+      len: Int,
+      rowIndex: Long,
+      base: Long,
+      sparseValueA: A,
+      sparseValueC: C,
+      f: (A, (Long, Long)) => C): (GpiBuffer[C], Int, Int) = {
     val t0 = System.nanoTime()
     val lenA = vA.length
     val vC = Array.ofDim[C](len)
@@ -852,15 +909,17 @@ object GpiBuffer {
     }
     val t1 = System.nanoTime()
     val t01 = LagUtils.tt(t0, t1)
-    if (false) println("GpiBuffer: gpiZipDenseWithIndexToDenseMatrix: time: >%.3f< s".format(t01))
+    if (false) {
+      println("GpiBuffer: gpiZipDenseWithIndexToDenseMatrix: time: >%.3f< s".format(t01))
+    }
     (GpiBuffer(vC), denseCountC, len)
   }
 
   def rvExtendSparseBuffersWithNonSparseValue[@spec(Int) A: ClassTag](
-    rv: (GpiBuffer[Int], GpiBuffer[A]),
-    origsize: Int,
-    deltasize: Int,
-    value: A): ((GpiBuffer[Int], GpiBuffer[A]), Int) = {
+      rv: (GpiBuffer[Int], GpiBuffer[A]),
+      origsize: Int,
+      deltasize: Int,
+      value: A): ((GpiBuffer[Int], GpiBuffer[A]), Int) = {
     val t0 = System.nanoTime()
     require(rv._1.length == rv._2.length)
     val rvl = rv._1.length
@@ -883,12 +942,15 @@ object GpiBuffer {
     require(i == denseCount)
     val t1 = System.nanoTime()
     val t01 = LagUtils.tt(t0, t1)
-    if (false) println("GpiBuffer: rvExtendSparseBuffers: time: >%.3f< s".format(t01))
+    if (false) {
+      println("GpiBuffer: rvExtendSparseBuffers: time: >%.3f< s".format(t01))
+    }
     ((GpiBuffer(rbs), GpiBuffer(vbs)), denseCount)
   }
 
   def rvDeleteItemFromSparseBuffers[@spec(Int) B: ClassTag](
-    rv: (GpiBuffer[Int], GpiBuffer[B]), indx: Int) = {
+      rv: (GpiBuffer[Int], GpiBuffer[B]),
+      indx: Int): (GpiBuffer[Int], GpiBuffer[B]) = {
     val t0 = System.nanoTime()
 
     def difba[@spec(Int) A: ClassTag](src: GpiBuffer[A], index: Int) = {
@@ -910,27 +972,34 @@ object GpiBuffer {
     }
     val t1 = System.nanoTime()
     val t01 = LagUtils.tt(t0, t1)
-    if (false) println("GpiBuffer: rvDeleteItemFromSparseBuffers: time: >%.3f< s".format(t01))
+    if (false) {
+      println("GpiBuffer: rvDeleteItemFromSparseBuffers: time: >%.3f< s".format(t01))
+    }
     (GpiBuffer(difba(rv._1, indx)), GpiBuffer(difba(rv._2, indx)))
   }
 
   def rvUpdateItemInSparseBuffers[@spec(Int) B: ClassTag](
     rv: (GpiBuffer[Int], GpiBuffer[B]),
     indx: Int,
-    elem: B) = (rv._1, rv._2.updated(indx, elem))
+    elem: B): (GpiBuffer[Int], GpiBuffer[B]) =
+    (rv._1, rv._2.updated(indx, elem))
 
   def rvInsertItemInSparseBuffers[@spec(Int) B: ClassTag](
     rv: (GpiBuffer[Int], GpiBuffer[B]),
     cursor: Int,
     indx: Int,
-    elem: B) = (rv._1.inserted(cursor, indx), rv._2.inserted(cursor, elem))
+    elem: B): (GpiBuffer[Int], GpiBuffer[B]) =
+    (rv._1.inserted(cursor, indx), rv._2.inserted(cursor, elem))
 
   // ****
-  def apply[@spec(Int) A: ClassTag](as: Array[A]) = new GpiBuffer(as)
-  def apply[@spec(Int) A: ClassTag](as: Array[A], length: Int) = new GpiBuffer(as, length)
-  def empty[@spec(Int) A: ClassTag] = new GpiBuffer(Array.empty[A])
-  private def ofDim[@spec(Int) A: ClassTag](n: Int) = new GpiBuffer(Array.ofDim[A](n))
-  private def fill[@spec(Int) A: ClassTag](n: Int)(a: A) = new GpiBuffer(Array.fill(n)(a))
+  def apply[@spec(Int) A: ClassTag](as: Array[A]): GpiBuffer[A] = new GpiBuffer(as)
+  def apply[@spec(Int) A: ClassTag](as: Array[A], length: Int): GpiBuffer[A] =
+    new GpiBuffer(as, length)
+  def empty[@spec(Int) A: ClassTag]: GpiBuffer[A] = new GpiBuffer(Array.empty[A])
+  private def ofDim[@spec(Int) A: ClassTag](n: Int) =
+    new GpiBuffer(Array.ofDim[A](n))
+  private def fill[@spec(Int) A: ClassTag](n: Int)(a: A) =
+    new GpiBuffer(Array.fill(n)(a))
 
   def binarySearchValue(ds: GpiBuffer[Int], key: Int): Option[Int] =
     binarySearch(ds, key)._1
@@ -939,41 +1008,42 @@ object GpiBuffer {
     val t0 = System.nanoTime()
     @tailrec
     def fr(lo: Int, hi: Int): (Option[Int], Option[Int]) = {
-      if (lo > hi)
+      if (lo > hi) {
         (None, Some(lo))
-      else {
+      } else {
         val mid: Int = lo + (hi - lo) / 2
         ds(mid) match {
           case mv if (mv == key) => (Some(mid), None)
           case mv if (mv <= key) => fr(mid + 1, hi)
-          case _                 => fr(lo, mid - 1)
+          case _ => fr(lo, mid - 1)
         }
       }
     }
     val t1 = System.nanoTime()
     val t01 = LagUtils.tt(t0, t1)
-    if (false) println("GpiBuffer: binarySearch: time: >%.3f< s".format(t01))
+    if (false) { println("GpiBuffer: binarySearch: time: >%.3f< s".format(t01)) }
     fr(0, ds.size - 1)
   }
   // ****
   // new compare
 
-  def gpiCompareSparseSparse[@spec(Int) T: ClassTag](
-    rvA: (GpiBuffer[Int], GpiBuffer[T]),
-    rvB: (GpiBuffer[Int], GpiBuffer[T]),
-    len: Int,
-    sparseValueA: T,
-    sparseValueB: T): (Boolean, Int) = if (sparseValueA != sparseValueB)
-    gpiCompareSparseSparseToDense(rvA, rvB, len, sparseValueA, sparseValueB)
-  else
-    gpiCompareSparseSparseToSparse(rvA, rvB, len, sparseValueA, sparseValueB)
+  def gpiCompareSparseSparse[@spec(Int) T: ClassTag](rvA: (GpiBuffer[Int], GpiBuffer[T]),
+                                                     rvB: (GpiBuffer[Int], GpiBuffer[T]),
+                                                     len: Int,
+                                                     sparseValueA: T,
+                                                     sparseValueB: T): (Boolean, Int) =
+    if (sparseValueA != sparseValueB) {
+      gpiCompareSparseSparseToDense(rvA, rvB, len, sparseValueA, sparseValueB)
+    } else {
+      gpiCompareSparseSparseToSparse(rvA, rvB, len, sparseValueA, sparseValueB)
+    }
 
   private def gpiCompareSparseSparseToDense[@spec(Int) A: ClassTag, @spec(Int) B: ClassTag](
-    rvA: (GpiBuffer[Int], GpiBuffer[A]),
-    rvB: (GpiBuffer[Int], GpiBuffer[B]),
-    len: Int,
-    sparseValueA: A,
-    sparseValueB: B): (Boolean, Int) = {
+      rvA: (GpiBuffer[Int], GpiBuffer[A]),
+      rvB: (GpiBuffer[Int], GpiBuffer[B]),
+      len: Int,
+      sparseValueA: A,
+      sparseValueB: B): (Boolean, Int) = {
     val t0 = System.nanoTime()
     val lenA = rvA._1.length
     val lenB = rvB._1.length
@@ -1004,19 +1074,25 @@ object GpiBuffer {
     }
     val t1 = System.nanoTime()
     val t01 = LagUtils.tt(t0, t1)
-    if (false) println("GpiBuffer: gpiCompareSparseSparseToDense: time: >%.3f< s".format(t01))
+    if (false) {
+      println("GpiBuffer: gpiCompareSparseSparseToDense: time: >%.3f< s".format(t01))
+    }
     (matched, iC)
   }
 
   private def gpiCompareSparseSparseToSparse[@spec(Int) A: ClassTag, @spec(Int) B: ClassTag](
-    rvA: (GpiBuffer[Int], GpiBuffer[A]),
-    rvB: (GpiBuffer[Int], GpiBuffer[B]),
-    len: Int,
-    sparseValueA: A,
-    sparseValueB: B): (Boolean, Int) = {
+      rvA: (GpiBuffer[Int], GpiBuffer[A]),
+      rvB: (GpiBuffer[Int], GpiBuffer[B]),
+      len: Int,
+      sparseValueA: A,
+      sparseValueB: B): (Boolean, Int) = {
     require(sparseValueA == sparseValueB)
-    def skipSparse[T](curi: Int, len: Int, bufs: (GpiBuffer[Int], GpiBuffer[T]), sparseValue: T): Int = {
-      if (curi == len || bufs._2(curi) != sparseValue) curi else skipSparse(curi +1, len, bufs, sparseValue)
+    def skipSparse[T](curi: Int,
+                      len: Int,
+                      bufs: (GpiBuffer[Int], GpiBuffer[T]),
+                      sparseValue: T): Int = {
+      if (curi == len || bufs._2(curi) != sparseValue) curi
+      else skipSparse(curi + 1, len, bufs, sparseValue)
     }
     val t0 = System.nanoTime()
     val lenA = rvA._1.length
@@ -1040,7 +1116,11 @@ object GpiBuffer {
       }
       val t1 = System.nanoTime()
       val t01 = LagUtils.tt(t0, t1)
-      if (false) println("GpiBuffer: gpiCompareSparseSparseToSparse: lenA < lenB: time: >%.3f< s".format(t01))
+      if (false) {
+        println(
+          "GpiBuffer: gpiCompareSparseSparseToSparse: lenA < lenB: time: >%.3f< s"
+            .format(t01))
+        }
       ((matched && iiA == lenA && iiB == lenB), iiC)
     } else {
       var iiA = skipSparse(0, lenA, rvA, sparseValueA)
@@ -1060,28 +1140,33 @@ object GpiBuffer {
       }
       val t1 = System.nanoTime()
       val t01 = LagUtils.tt(t0, t1)
-      if (false) println("GpiBuffer: gpiCompareSparseSparseToSparse: lenA >= lenB: time: >%.3f< s".format(t01))
+      if (false) {
+        println(
+          "GpiBuffer: gpiCompareSparseSparseToSparse: lenA >= lenB: time: >%.3f< s"
+            .format(t01))
+        }
       ((matched && iiA == lenA && iiB == lenB), iiC)
     }
   }
 
-  def gpiCompareSparseDense[@spec(Int) T: ClassTag](
-    rvA: (GpiBuffer[Int], GpiBuffer[T]),
-    vB: GpiBuffer[T],
-    len: Int,
-    sparseValueA: T,
-    sparseValueB: T): (Boolean, Int) = if (sparseValueA != sparseValueB)
-    gpiCompareSparseDenseToDense(rvA, vB, len, sparseValueA, sparseValueB)
-  else
-    gpiCompareSparseDenseToDense(rvA, vB, len, sparseValueA, sparseValueB)
+  def gpiCompareSparseDense[@spec(Int) T: ClassTag](rvA: (GpiBuffer[Int], GpiBuffer[T]),
+                                                    vB: GpiBuffer[T],
+                                                    len: Int,
+                                                    sparseValueA: T,
+                                                    sparseValueB: T): (Boolean, Int) =
+    if (sparseValueA != sparseValueB) {
+      gpiCompareSparseDenseToDense(rvA, vB, len, sparseValueA, sparseValueB)
+    } else {
+      gpiCompareSparseDenseToDense(rvA, vB, len, sparseValueA, sparseValueB)
 //    gpiCompareSparseDenseToSparse(rvA, vB, len, sparseValueA, sparseValueB) BROKE
+    }
 
   private def gpiCompareSparseDenseToDense[@spec(Int) A: ClassTag, @spec(Int) B: ClassTag](
-    rvA: (GpiBuffer[Int], GpiBuffer[A]),
-    vB: GpiBuffer[B],
-    len: Int,
-    sparseValueA: A,
-    sparseValueB: B): (Boolean, Int) = {
+      rvA: (GpiBuffer[Int], GpiBuffer[A]),
+      vB: GpiBuffer[B],
+      len: Int,
+      sparseValueA: A,
+      sparseValueB: B): (Boolean, Int) = {
     val t0 = System.nanoTime()
     val lenA = rvA._1.length
     val lenB = vB.length
@@ -1102,7 +1187,9 @@ object GpiBuffer {
     }
     val t1 = System.nanoTime()
     val t01 = LagUtils.tt(t0, t1)
-    if (false) println("GpiBuffer: gpiCompareSparseDenseToDense: time: >%.3f< s".format(t01))
+    if (false) {
+      println("GpiBuffer: gpiCompareSparseDenseToDense: time: >%.3f< s".format(t01))
+    }
     (matched, iC)
   }
 
@@ -1128,23 +1215,25 @@ object GpiBuffer {
 //    (matched, iiA)
 //  }
 
-  def gpiCompareDenseSparse[@spec(Int) T: ClassTag](
-    vA: GpiBuffer[T],
-    rvB: (GpiBuffer[Int], GpiBuffer[T]),
-    len: Int,
-    sparseValueA: T,
-    sparseValueB: T): (Boolean, Int) = if (sparseValueA != sparseValueB)
-    gpiCompareDenseSparseToDense(vA, rvB, len, sparseValueA, sparseValueB)
-  else
-    gpiCompareDenseSparseToDense(vA, rvB, len, sparseValueA, sparseValueB)
+  def gpiCompareDenseSparse[@spec(Int) T: ClassTag](vA: GpiBuffer[T],
+                                                    rvB: (GpiBuffer[Int], GpiBuffer[T]),
+                                                    len: Int,
+                                                    sparseValueA: T,
+                                                    sparseValueB: T): (Boolean, Int) =
+    if (sparseValueA != sparseValueB) {
+      gpiCompareDenseSparseToDense(vA, rvB, len, sparseValueA, sparseValueB)
+    }
+    else {
+      gpiCompareDenseSparseToDense(vA, rvB, len, sparseValueA, sparseValueB)
 //    gpiCompareDenseSparseToSparse(vA, rvB, len, sparseValueA, sparseValueB)
+    }
 
   private def gpiCompareDenseSparseToDense[@spec(Int) A: ClassTag, @spec(Int) B: ClassTag](
-    vA: GpiBuffer[A],
-    rvB: (GpiBuffer[Int], GpiBuffer[B]),
-    len: Int,
-    sparseValueA: A,
-    sparseValueB: B): (Boolean, Int) = {
+      vA: GpiBuffer[A],
+      rvB: (GpiBuffer[Int], GpiBuffer[B]),
+      len: Int,
+      sparseValueA: A,
+      sparseValueB: B): (Boolean, Int) = {
     val t0 = System.nanoTime()
     val lenA = vA.length
     val lenB = rvB._1.length
@@ -1164,7 +1253,9 @@ object GpiBuffer {
     }
     val t1 = System.nanoTime()
     val t01 = LagUtils.tt(t0, t1)
-    if (false) println("GpiBuffer: gpiCompareDenseSparseToDense: time: >%.3f< s".format(t01))
+    if (false) {
+      println("GpiBuffer: gpiCompareDenseSparseToDense: time: >%.3f< s".format(t01))
+    }
     (matched, iC)
   }
 
@@ -1190,19 +1281,19 @@ object GpiBuffer {
 //    (matched, iiB)
 //  }
 
-  def gpiCompareDenseDense[@spec(Int) T: ClassTag](
-    vA: GpiBuffer[T],
-    vB: GpiBuffer[T],
-    len: Int,
-    sparseValueA: T,
-    sparseValueB: T): (Boolean, Int) = gpiCompareDenseDenseToDense(vA, vB, len, sparseValueA, sparseValueB)
+  def gpiCompareDenseDense[@spec(Int) T: ClassTag](vA: GpiBuffer[T],
+                                                   vB: GpiBuffer[T],
+                                                   len: Int,
+                                                   sparseValueA: T,
+                                                   sparseValueB: T): (Boolean, Int) =
+    gpiCompareDenseDenseToDense(vA, vB, len, sparseValueA, sparseValueB)
 
   private def gpiCompareDenseDenseToDense[@spec(Int) A: ClassTag, @spec(Int) B: ClassTag](
-    vA: GpiBuffer[A],
-    vB: GpiBuffer[B],
-    len: Int,
-    sparseValueA: A,
-    sparseValueB: B): (Boolean, Int) = {
+      vA: GpiBuffer[A],
+      vB: GpiBuffer[B],
+      len: Int,
+      sparseValueA: A,
+      sparseValueB: B): (Boolean, Int) = {
     val t0 = System.nanoTime()
     val lenA = vA.length
     val lenB = vB.length
@@ -1218,7 +1309,9 @@ object GpiBuffer {
     }
     val t1 = System.nanoTime()
     val t01 = LagUtils.tt(t0, t1)
-    if (false) println("GpiBuffer: gpiCompareDenseDenseToDense: time: >%.3f< s".format(t01))
+    if (false) {
+      println("GpiBuffer: gpiCompareDenseDenseToDense: time: >%.3f< s".format(t01))
+    }
     (matched, iC)
   }
   def main(args: Array[String]): Unit = {
@@ -1280,10 +1373,12 @@ object GpiBuffer {
   //  @throws(classOf[java.io.IOException])
   //  def sizeof(obj: Object): Int = {
   //    def byteOutputStream: java.io.ByteArrayOutputStream = new java.io.ByteArrayOutputStream();
-  //    def objectOutputStream: java.io.ObjectOutputStream = new java.io.ObjectOutputStream(byteOutputStream);
+  //    def objectOutputStream: java.io.ObjectOutputStream =
+  //      new java.io.ObjectOutputStream(byteOutputStream);
   //    objectOutputStream.writeObject(obj);
   //    objectOutputStream.flush();
   //    objectOutputStream.close();
   //    return byteOutputStream.toByteArray().length;
   //  }
 }
+// scalastyle:on println

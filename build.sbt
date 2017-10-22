@@ -34,11 +34,11 @@ crossScalaVersions := {
 }
 
 javacOptions ++= {
-    if (sparkVersion.value >= "2.1.1") {
-      Seq("-source", "1.8", "-target", "1.8")
-    } else {
-      Seq("-source", "1.7", "-target", "1.7")
-    }
+  if (sparkVersion.value >= "2.1.1") {
+    Seq("-source", "1.8", "-target", "1.8")
+  } else {
+    Seq("-source", "1.7", "-target", "1.7")
+  }
 }
 
 //tag::spName[]
@@ -52,7 +52,6 @@ fork := true
 
 javaOptions ++= Seq("-Xms2G", "-Xmx2G", "-XX:MaxPermSize=2048M", "-XX:+CMSClassUnloadingEnabled")
 
-
 libraryDependencies += "com.holdenkarau" % "spark-testing-base_2.11" % "2.1.0_0.6.0" % "test"
 libraryDependencies += "org.scalatest" % "scalatest_2.11" % "3.0.0" % "test"
 
@@ -61,7 +60,9 @@ libraryDependencies += "org.scalatest" % "scalatest_2.11" % "3.0.0" % "test"
 
 scalacOptions ++= Seq("-deprecation", "-unchecked")
 
-pomIncludeRepository := { x => false }
+pomIncludeRepository := { x =>
+  false
+}
 
 // publish settings
 publishTo := {
@@ -69,7 +70,7 @@ publishTo := {
   if (isSnapshot.value)
     Some("snapshots" at nexus + "content/repositories/snapshots")
   else
-    Some("releases"  at nexus + "service/local/staging/deploy/maven2")
+    Some("releases" at nexus + "service/local/staging/deploy/maven2")
 }
 
 licenses := Seq("Apache License 2.0" -> url("http://www.apache.org/licenses/LICENSE-2.0.html"))
@@ -91,17 +92,27 @@ pomExtra := (
   </developers>
 )
 
-credentials ++= Seq(Credentials(Path.userHome / ".ivy2" / ".sbtcredentials"), Credentials(Path.userHome / ".ivy2" / ".sparkcredentials"))
+credentials ++= Seq(Credentials(Path.userHome / ".ivy2" / ".sbtcredentials"),
+                    Credentials(Path.userHome / ".ivy2" / ".sparkcredentials"))
 
 spIncludeMaven := true
 
 useGpg := true
 
-
 // ******
 // lagraph specific
 
 // scala doc
-scalacOptions in (Compile, doc) := List("-skip-packages",  "com.ibm.lagraph.impl") 
+scalacOptions in (Compile, doc) := List("-skip-packages", "com.ibm.lagraph.impl")
 // Display full-length stacktraces from ScalaTest:
 testOptions in Test += Tests.Argument("-oF")
+
+// scalfmt
+def latestScalafmt = "1.3.0"
+commands += Command.args("scalafmt", "Run scalafmt cli.") {
+  case (state, args) =>
+    val Right(scalafmt) =
+      org.scalafmt.bootstrap.ScalafmtBootstrap.fromVersion(latestScalafmt)
+    scalafmt.main("--non-interactive" +: args.toArray)
+    state
+}

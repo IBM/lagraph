@@ -1,6 +1,6 @@
 addSbtPlugin("com.typesafe.sbteclipse" % "sbteclipse-plugin" % "4.0.0")
 
-addSbtPlugin("com.geirsson" % "sbt-scalafmt" % "1.3.0")
+libraryDependencies += "com.geirsson" %% "scalafmt-bootstrap" % "0.6.6"
 
 addSbtPlugin("org.scalastyle" %% "scalastyle-sbt-plugin" % "0.8.0")
 
@@ -13,4 +13,3 @@ addSbtPlugin("org.spark-packages" % "sbt-spark-package" % "0.2.5")
 addSbtPlugin("com.jsuereth" % "sbt-pgp" % "1.0.0")
 
 addSbtPlugin("org.scoverage" % "sbt-scoverage" % "1.5.0")
-
