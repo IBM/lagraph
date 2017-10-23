@@ -28,6 +28,7 @@ import scala.collection.mutable.{Map => MMap}
 import com.ibm.lagraph._
 
 class LagDstrFactorySuite extends FunSuite with Matchers with SharedSparkContext {
+  val DEBUG = false
 
   val denseGraphSizes = List(1 << 4, 1 << 5)
   //  val sparseGraphSizes = List(1 << 16, 1 << 17, 1 << 29, 1 << 30)
@@ -44,7 +45,7 @@ class LagDstrFactorySuite extends FunSuite with Matchers with SharedSparkContext
   test("LagDstrContext.vIndices") {
     for (graphSize <- denseGraphSizes) {
       for (nblock <- nblocks) {
-        println("LagDstrContext.vIndices", graphSize, nblock)
+        if (DEBUG) println("LagDstrContext.vIndices", graphSize, nblock)
         val hc: LagContext = LagContext.getLagDstrContext(sc, graphSize, nblock)
         val start = 2
         val end = start + hc.graphSize
@@ -62,7 +63,7 @@ class LagDstrFactorySuite extends FunSuite with Matchers with SharedSparkContext
   test("LagDstrContext.mIndices") {
     for (graphSize <- denseGraphSizes) {
       for (nblock <- nblocks) {
-        println("LagDstrContext.mIndices", graphSize, nblock)
+        if (DEBUG) println("LagDstrContext.mIndices", graphSize, nblock)
         val hc: LagContext = LagContext.getLagDstrContext(sc, graphSize, nblock)
         val start = (2L, 2L)
         val m = hc.mIndices(start)
@@ -85,7 +86,7 @@ class LagDstrFactorySuite extends FunSuite with Matchers with SharedSparkContext
   test("LagDstrContext.mReplicate") {
     for (graphSize <- denseGraphSizes) {
       for (nblock <- nblocks) {
-        println("LagDstrContext.mReplicate", graphSize, nblock)
+        if (DEBUG) println("LagDstrContext.mReplicate", graphSize, nblock)
         val hc: LagContext = LagContext.getLagDstrContext(sc, graphSize, nblock)
         val singleValue: Double = 99.0
         val m = hc.mReplicate(singleValue)

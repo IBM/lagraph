@@ -84,7 +84,7 @@ to implement a linear algebra-based version of the
 
 1. Read the [algebraic formulation of the Bellman-Ford algorithm](algorithms-bellmanford).
 
-1. [Install Zeppelin](http://zeppelin.apache.org/docs/0.7.1/install/install.html#quick-start),
+1. [Install Zeppelin](http://zeppelin.apache.org/docs/0.7.3/install/install.html#quick-start),
    download the LAGraph jar, and start the zeppelin daemon.
 
    E.g., on linux (assuming you have java with a version >=1.7):
@@ -93,17 +93,14 @@ to implement a linear algebra-based version of the
    # e.g., work from your home directory
    cd ~
    # download zeppelin and install
-   wget http://mirror.cc.columbia.edu/pub/software/apache/zeppelin/zeppelin-0.7.1/zeppelin-0.7.1-bin-all.tgz
-   tar -zf zeppelin-0.7.1-bin-all.tgz
-   cd zeppelin-0.7.1-bin-all
-   # get the LAGraph jar
-   wget http://pokgsa.ibm.com/projects/s/spp/public/lagraph/lagraph_2.11-0.1.0-SNAPSHOT.jar
-   # get the Zepplin 'lagraph-tutorial' notebook
-   wget http://pokgsa.ibm.com/projects/s/spp/public/lagraph/lagraph-tutorial.json
+   wget http://mirror.cc.columbia.edu/pub/software/apache/zeppelin/zeppelin-0.7.3/zeppelin-0.7.3-bin-all.tgz
+   tar -zf zeppelin-0.7.3-bin-all.tgz
+   cd zeppelin-0.7.3-bin-all
+
    # start the Zeppelin daemon
    bin/zeppelin-daemon.sh start
    # when ur done playing w/ the tutorial don't forget to stop the daemon
-   # bin/zeppelin-daemon.sh stop
+   bin/zeppelin-daemon.sh stop
    ```
 
    E.g., on mac OS
@@ -119,21 +116,16 @@ to implement a linear algebra-based version of the
    brew cask install java
    # if you don't already have Zeppelin
    brew install apache-zeppelin
-   # get the LAGraph jar
-   wget http://pokgsa.ibm.com/projects/s/spp/public/lagraph/lagraph_2.11-0.1.0-SNAPSHOT.jar
-   # get the Zepplin 'lagraph-tutorial' notebook
-   wget http://pokgsa.ibm.com/projects/s/spp/public/lagraph/lagraph-tutorial.json
+
    # start the Zeppelin daemon
    zeppelin-daemon.sh start
    # when ur done playing w/ the tutorial don't forget to stop the daemon
-   # zeppelin-daemon.sh stop
+   zeppelin-daemon.sh stop
    ```
 
 1. Open a browser, go to URL `http://localhost:8080`, select the
    "Zeppelin" icon in the upper left hand corner, select "Import
-   Note", select "Choose a JSON here", select the
-   'lagraph-tutorial.json' file that you downloaded in the previous
-   step, and select "open".
+   Note", select "Add from URL", enter the url [https://ibm.github.io/lagraph/files/lagraph-tutorial.json](https://ibm.github.io/lagraph/files/lagraph-tutorial.json) and select "Import Note".
 
 1. From Zeppelin, use the "Notebook" pull down on the menu bar to select the
    'lagraph-tutorial' notebook.

@@ -28,6 +28,7 @@ import com.holdenkarau.spark.testing.SharedSparkContext
 import com.ibm.lagraph._
 
 class LagDstrV3Suite extends FunSuite with Matchers with SharedSparkContext {
+  val DEBUG = false
 
   def mult[A](
       a: Vector[Vector[A]],
@@ -51,7 +52,7 @@ class LagDstrV3Suite extends FunSuite with Matchers with SharedSparkContext {
     val sr = LagSemiring.plus_times[Double]
     for (graphSize <- denseGraphSizes) {
       for (nblock <- nblocks) {
-        println("LagDstrContext.mTm", graphSize, nblock)
+        if (DEBUG) println("LagDstrContext.mTm", graphSize, nblock)
         val hc: LagContext = LagContext.getLagDstrContext(sc, graphSize, nblock)
 
         val nv = graphSize
@@ -90,7 +91,7 @@ class LagDstrV3Suite extends FunSuite with Matchers with SharedSparkContext {
     val nblocks = (1 until 12).toList
     for (graphSize <- denseGraphSizes) {
       for (nblock <- nblocks) {
-        println("LagDstrContext.mTv", graphSize, nblock)
+        if (DEBUG) println("LagDstrContext.mTv", graphSize, nblock)
         val hc: LagContext = LagContext.getLagDstrContext(sc, graphSize, nblock)
         // vector
         val sparseValue = 0.0
@@ -133,7 +134,7 @@ class LagDstrV3Suite extends FunSuite with Matchers with SharedSparkContext {
     val nblocks = (1 until 12).toList
     for (graphSize <- denseGraphSizes) {
       for (nblock <- nblocks) {
-        println("LagDstrContext.vIndices", graphSize, nblock)
+        if (DEBUG) println("LagDstrContext.vIndices", graphSize, nblock)
         val hc: LagContext = LagContext.getLagDstrContext(sc, graphSize, nblock)
         val start = 100
         val end = start + hc.graphSize
@@ -163,7 +164,7 @@ class LagDstrV3Suite extends FunSuite with Matchers with SharedSparkContext {
     val offset = 100
     for (graphSize <- denseGraphSizes) {
       for (nblock <- nblocks) {
-        println("LagDstrContext.vZip", graphSize, nblock)
+        if (DEBUG) println("LagDstrContext.vZip", graphSize, nblock)
         val hc: LagContext = LagContext.getLagDstrContext(sc, graphSize, nblock)
         // vectors
         val u = hc.vIndices(0)
@@ -193,7 +194,7 @@ class LagDstrV3Suite extends FunSuite with Matchers with SharedSparkContext {
       val nr = graphSize
       val nc = graphSize
       for (nblock <- nblocks) {
-        println("LagDstrContext.mZipWithIndex", graphSize, nblock)
+        if (DEBUG) println("LagDstrContext.mZipWithIndex", graphSize, nblock)
         val hc: LagContext = LagContext.getLagDstrContext(sc, graphSize, nblock)
         val mA = hc.mFromMap(
           LagContext.mapFromSeqOfSeq(Vector.tabulate(nr, nc)((r, c) => (r * nc + c).toDouble),

@@ -30,6 +30,8 @@ import com.ibm.lagraph._
 import scala.collection.mutable.ArrayBuffer
 
 class LagDstrMechanicSuite extends FunSuite with Matchers with SharedSparkContext {
+  val DEBUG = false
+
   val denseGraphSizes = List(1 << 4, 1 << 5)
   //  val sparseGraphSizes = List(1 << 16, 1 << 17, 1 << 29, 1 << 30)
   val sparseGraphSizes = List(1 << 16, 1 << 17, 1 << 26, 1 << 27)
@@ -47,7 +49,7 @@ class LagDstrMechanicSuite extends FunSuite with Matchers with SharedSparkContex
       val nr = graphSize
       var nc = graphSize
       for (nblock <- nblocks) {
-        println("LagDstrContext.mTranspose", graphSize, nblock)
+        if (DEBUG) println("LagDstrContext.mTranspose", graphSize, nblock)
         val hc: LagContext = LagContext.getLagDstrContext(sc, graphSize, nblock)
         val m = hc.mFromMap(
           LagContext.mapFromSeqOfSeq(Vector.tabulate(nr, nc)((r, c) => (r * nc + c).toDouble),
@@ -79,7 +81,7 @@ class LagDstrMechanicSuite extends FunSuite with Matchers with SharedSparkContex
       val nr = graphSize
       var nc = graphSize
       for (nblock <- nblocks) {
-        println("LagDstrContext.vFromMrow", graphSize, nblock)
+        if (DEBUG) println("LagDstrContext.vFromMrow", graphSize, nblock)
         val hc: LagContext = LagContext.getLagDstrContext(sc, graphSize, nblock)
         val m = hc.mFromMap(
           LagContext.mapFromSeqOfSeq(Vector.tabulate(nr, nc)((r, c) => (r * nc + c).toDouble),
@@ -110,7 +112,7 @@ class LagDstrMechanicSuite extends FunSuite with Matchers with SharedSparkContex
       val nr = graphSize
       var nc = graphSize
       for (nblock <- nblocks) {
-        println("LagDstrContext.vFromMrow", graphSize, nblock)
+        if (DEBUG) println("LagDstrContext.vFromMrow", graphSize, nblock)
         val hc: LagContext = LagContext.getLagDstrContext(sc, graphSize, nblock)
 //        val m = hc.mFromSeqOfSeq(Vector.tabulate(nr, nc)((r, c) =>
 //          (r * nc + c).toDouble), sparseValueDouble)
