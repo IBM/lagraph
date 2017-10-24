@@ -10,63 +10,41 @@ License ...
 {% endcomment %}
 -->
 
-[//]: LAGraph is now a **SparkPackages** project.
-[//]: Hopefully, LAGraph will soon be a **SparkPackages** project.
+__Please note that LAGraph is still evolving and several challenges
+remain before it is ready for prime time.__
 
-LAGraph is (actually, will soon be) a [**SparkPackages**
-project](https://spark-packages.org/?q=tags%3A%22Graph%22) that is
-being used to investigate algebraicly-expressed graph algorithms
-implemented using an interface that exploits functional programming
-techniques and uses a cluster to achieve scale and performance.
-The LAGraph interface is written in Scala and has implementations for
-both pure-Scala and Spark environments. Scala permits a elegant
+LAGraph is a Scala API for implementing graph algorithms expressed in
+the language of linear algebra.  The interface is written in Scala
+using functional programming techniques and has implementations for
+both pure-Scala and Spark environments.  Scala permits an elegant
 expression of the semantics of semirings and Spark provides a
-distributed compute platform to achieve scale and performance.
-The proposed interface provides a concise, high-level abstraction that
-spares the user from the details of the underlying implementation of
-the linear algebra operations.  This decoupling permits the
-implementation to focus on performance and scalability.
-The decoupling also allows issues to be partitioned into those
-involving interface and those involving implementation.
-Based on user feedback from our [Graph Algorithms Building Blocks
+distributed compute platform to achieve scale and performance.  The
+interface provides a concise, high-level abstraction that spares the
+user from the details of the underlying implementation of the linear
+algebra operations.  This decoupling permits the implementation to
+focus on performance and scalability.  The decoupling also allows
+issues to be partitioned into those involving interface and those
+involving implementation.  Based on user feedback from our [Graph
+Algorithms Building Blocks
 (GABB’2017)](http://graphanalysis.org/workshop2017.html) workshop we
 are publishing an early release of LAGraph to facilitate a review of
-goals and issues pertaining to the interface.
+goals and issues pertaining to both the interface and its
+implementation.
 
-## Interface Goals / Issues
+## Issues
 
-The primary goal of the interface are the standards of "minimal yet complete".
-To evaluate the interface we've [implemented a number of standard graph algorithms](algorithms-reference.md). But to establish minimality and completeness more algorithms need to be implemented.
-
-## Execution Goals / Issues
-
-The implementation is a novel adaptation of the Scalable Universal
-Matrix Multiplication Algorithm (SUMMA) to Spark RDD semantics. The
-implementation is currently performant when compared to GraphX.
-However, to improve performance, it needs to be updated from RDDs to a
-Spark Datasets. Also, we are actively looking to exploit intra-task
-concurrency afforded by specific computer architectures. Neither of
-these execution issues should affect the interface.
-
-
-[//]: LAGraph is still evolving and several challenges remain before it is ready for prime time.
-
-[//]: 1. **Minimal yet complete**: while several
-[//]: classical algorithms have been implemented on top of LAGraph, the
-[//]: completeness of interface has not been established and the list
-[//]: of supported algorithms needs to expand.
-[//]: 1. **Instance-specific interface** E.g., `hc.mTv(semiRing, lagMatrix, lagVector)` will become `lagMatrix.Tv(semiRing, lagVector)`
-[//]: 1. **Unit test**: coverage needs improvement
-
-
-[//]: The [**LAGraph GitHub README**](https://github.com/ibm/lagraph) describes
-[//]: building, testing, and running LAGraph. Please read [**Contributing to LAGraph**](contributing-to-lagraph)
-[//]: to find out how to help improve LAGraph.
-
-[//]: To download LAGraph,
-[//]: Eventually, to download LAGraph,
-[//]: visit the [LAGraph SparkPackages homepage](https://spark-packages.org/?q=tags%3A%22Graph%22).
-[//]: But, for now, download LAGraph from [pokgsa](http://pokgsa.ibm.com/projects/s/spp/public/lagraph/lagraph_2.11-0.1.0-SNAPSHOT.jar).
+1. **Minimal yet complete interface** The primary goal of the interface are the standards of "minimal yet
+complete".  To evaluate the interface we've [implemented a number of
+standard graph algorithms](algorithms-reference.md). But to establish
+minimality and completeness more algorithms need to be implemented.
+1. **Instance-specific interface** E.g., `hc.mTv(semiRing, lagMatrix, lagVector)` will become `lagMatrix.Tv(semiRing, lagVector)`
+1. **Datasets**: The implementation is based on a novel adaptation of
+the Scalable Universal Matrix Multiplication Algorithm (SUMMA) to
+Spark RDD semantics. The implementation is currently performant when
+compared to GraphX.  However, to improve performance, it needs to be
+updated to exploit Spark Datasets.
+1. **Intra-task concurrency**: exploit intra-task concurrency afforded by specific computer architectures.
+1. **Unit test**: coverage needs improvement
 
 
 ## Quick Start
