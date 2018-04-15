@@ -84,7 +84,7 @@ matrix used in the algorithm.
 
 ### Implementation of the Distance-only Algorithm
 
-Here is the implementation of the algorithm. It is valid for for both the distance-only computation and path-augmented computation.
+Here is the implementation of the algorithm. It is valid for both the distance-only computation and path-augmented computation.
 
 ```scala
 // ********
