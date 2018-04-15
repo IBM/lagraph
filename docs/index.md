@@ -49,12 +49,12 @@ updated to exploit Spark Datasets.
 
 ## Quick Start
 
-This tutorial provides a quick introdution to how LAGraph can be used
+This tutorial provides a quick introduction to how LAGraph can be used
 to implement a linear algebra-based version of the
 [Bellman Ford algorithm](https://en.wikipedia.org/wiki/Bellman%E2%80%93Ford_algorithm):
 
 1. If you are not familiar with linear algebra-based formulations
-   (e.g., semiring-based formulations) of graph algrothims read
+   (e.g., semiring-based formulations) of graph algorithms read
    [Graphs and Big Data](graphs-overview).
 
 1. To understand how to express semirings using LAGraph read
