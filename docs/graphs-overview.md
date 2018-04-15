@@ -274,7 +274,7 @@ requirement for inverses, the structure that is most appropriate for
 using algebraic techniques to address graph problems is the
 semiring. Why is it more appropriate structure? Well, by dropping the
 inverse requirements, as we did in the above example, we can define
-addition and multiplication in such away as to facilitate the
+addition and multiplication in such a way as to facilitate the
 implementation of a particular graph algorithm.
 
 So what precisely is a semiring?
