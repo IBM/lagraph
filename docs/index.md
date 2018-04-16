@@ -34,6 +34,8 @@ implementation.
 
 ## Issues
 
+__TBD__ Make these issues GitHub issues and remove this section.
+
 1. **Minimal yet complete interface** The primary goal of the interface are the standards of "minimal yet
 complete".  To evaluate the interface we've [implemented a number of
 standard graph algorithms](algorithms-reference.md). But to establish

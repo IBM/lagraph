@@ -20,11 +20,13 @@ characteristics are:
 
 
 LAGraph is evolving, while several classical algorithms have been
-implemented on top of LAGraph, much work still needs to be done.  
+implemented on top of LAGraph, much work still needs to be done before
+it is ready for production.
 
 ## Getting Started
 
-To get start visit the [**LAGraph Documentation**](https://ibm.github.io/lagraph/).
+To get started visit _Quick Start_ section of the [**LAGraph
+Documentation**](https://ibm.github.io/lagraph/).
 
 ## Coordinates
 
@@ -62,7 +64,7 @@ For Maven:
 
 ## Contributing
 
-Interested in contributing. Please visit [Contributing](CONTRIBUTING.md).
+Interested in contributing? Please visit [Contributing](CONTRIBUTING.md).
 
 Some core issues are currently documented in the [issues
 section](https://ibm.github.io/lagraph/#issues) of the LAGraph
