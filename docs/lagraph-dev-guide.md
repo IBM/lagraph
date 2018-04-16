@@ -16,17 +16,17 @@ License ...
 
 LAGraph is built using [sbt](http://www.scala-sbt.org/).
 LAGraph requires sbt 0.13 (or higher).
-To build LAGraph, run:
+To build LAGraph, from the project directory run:
 
-    sbt package
+    sbt/sbt package
 
 * * *
 
 ## Testing LAGraph
 
-LAGraph features a comprehensive set of integration tests. To perform these tests, run:
+LAGraph features a comprehensive set of integration tests. To perform these tests, from the project directory run:
 
-    sbt test
+    sbt/sbt test
 
 * * *
 
@@ -36,9 +36,9 @@ LAGraph itself is written in Scala and is managed using sbt. As a result, LAGrap
 imported into a standard development environment such as the
 [ScalaIDE for Eclipse](http://scala-ide.org/).
 
-To generate project metadata for eclipse, run:
+To generate project metadata for eclipse, from the project directory run:
 
-    sbt eclipse
+    sbt/sbt eclipse
 
 For eclipse, if necessary, select the appropriate Scala compiler, e.g.,
 
