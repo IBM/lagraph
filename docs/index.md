@@ -11,7 +11,7 @@ License ...
 -->
 
 __Please note that LAGraph is still evolving and several challenges
-remain before it is ready for production applications.__
+remain before it is ready for production.__
 
 LAGraph is a Scala API for implementing graph algorithms expressed in
 the language of linear algebra.  The interface is written in Scala

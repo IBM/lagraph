@@ -24,7 +24,7 @@ implemented on top of LAGraph, much work still needs to be done.
 
 ## Getting Started
 
-To get start visit [**LAGraph Documentation**](https://ibm.github.io/lagraph/).
+To get start visit the [**LAGraph Documentation**](https://ibm.github.io/lagraph/).
 
 ## Coordinates
 
@@ -62,7 +62,7 @@ For Maven:
 
 ## Contributing
 
-Interested in contributing. Please visit [Contributing](CONTRIBUTING.md)
+Interested in contributing. Please visit [Contributing](CONTRIBUTING.md).
 
 Some core issues are currently documented in the [issues
 section](https://ibm.github.io/lagraph/#issues) of the LAGraph
