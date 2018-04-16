@@ -3,8 +3,10 @@ Welcome to the LAGraph package.
 We try to follow standard Github procedures.
 
 If you find a bug please create an issue and then follow it up with a
-pull request if you have a solution. Here are some notes on how to do
-that ...
+pull request if you have a solution. This page contains some notes on how to do
+that.
+
+Any questions? Please feel free to contact @hornwp.
 
 ## LAGraph on GitHub
 
@@ -19,25 +21,27 @@ yourself.
 If you find a issue that you are interested in working on then just
 add a comment to the issue asking to be assigned the issue.
 
-Once you have a GitHub account, go to the [LAGraph GitHub
-site](https://github.com/ibm/lagraph) and click the Fork button to
-fork a personal remote copy of the LAGraph repository to your GitHub
-account.
+To work on an issue you'll want to create a fork. To create a fork go
+to the [LAGraph GitHub site](https://github.com/ibm/lagraph) and click
+the Fork button to fork a personal remote copy of the LAGraph
+repository to your GitHub account.
 
-The next step is to clone your LAGraph fork to your local machine.
+Next clone the newly created LAGraph fork to your local machine.
 
 	$ git clone https://github.com/YOUR_GITHUB_NAME/lagraph.git
 
-Following this, it's a good idea to set your git user name and email
-address. In addition, you may want to set the `push.default` property
-to `simple`. You only need to execute these commands once.
+If you haven't already done so, it's a good idea to set your git user
+name and email address. In addition, [you may want to set the
+`push.default` property to
+`simple`](https://stackoverflow.com/questions/21839651/git-what-is-the-difference-between-push-default-matching-and-simple). You
+only need to execute these commands once.
 
 	$ git config --global user.name "Your Name"
 	$ git config --global user.email "yourname@yourhost.com"
 	$ git config --global push.default simple
 
 Next, reference the main LAGraph repository as a remote repository. By
-convention, you can call this `upstream`. You only need to add the
+convention, this remote is named `upstream`. You only need to add the
 remote `upstream` repository once.
 
 	$ git remote add upstream https://github.com/ibm/lagraph.git
@@ -65,9 +69,9 @@ into your local branch):
 
 It's recommended that you create a new, separate branch for your work
 based on the current `master` branch. Give this branch a descriptive
-name. For example, if you were assigned the issue `#101`, you
-could use the `checkout -b` command to create a new branch based on
-the `master` branch and check out this branch:
+name. For example, if you are working on a pull request to resolve
+issue `#101`, you could use the `checkout -b` command to create a new
+branch based on the `master` branch and check out this branch, e.g.:
 
 	git checkout -b ISSUE-101-my_cool_new_feature
 
@@ -81,8 +85,7 @@ the project:
 
 Your commit messages should follow standard git formatting
 conventions. If your commit is in regards to a particular issue,
-please include a reference, such as in the
-following:
+please include a reference, e.g.:
 
 	git commit -m "[# ISSUE-101] My cool new feature"
 
@@ -96,22 +99,21 @@ When ready, push your changes on this branch to your remote GitHub fork:
 	
 	$ git push --set-upstream origin ISSUE-101-my_cool_new_feature
 
+LAGraph uses travis for CI. To test your GitHub fork against the
+standard build, first, if you haven't already done so, [register with
+travis](https://docs.travis-ci.com/user/getting-started/). Then go to
+`https://travis-ci.org/YOUR_GITHUB_NAME/lagraph` and follow
+instructions to trigger a build.
 
-
-
-At this stage, you can go to the GitHub web page for your fork and
-file a Pull Request for the work that you did on this branch. A Pull
-Request is a request for project committers (who have write access to
-LAGraph) to review your code and integrate your code into the project.
-Typically, you will see a green button to allow you to file a Pull
-Request.
-
-Once your Pull Request is opened at
-[LAGraph Pull Requests](https://github.ibm/com/ibm/lagraph/pulls),
-typically Jenkins will automatically build the project to see if all
-tests pass when run for your particular branch. These automatic builds
-can be seen
-[here](https://sparktc.ibmcloud.com/jenkins/job/LAGraph-PullRequestBuilder/).
+Once your satisfied with the changes, you can go to the GitHub page
+for your fork or to the [GitHub page for
+LAGraph](https://github.com/ibm/lagraph) and create a Pull Request for
+the work that you did on this branch. A Pull Request is a request for
+project committers (who have write access to LAGraph) to review your
+code and integrate your code into the project.  Typically, you will
+see a green button to allow you to file a Pull Request. When you
+create the Pull request you should identify the issue that it
+addresses in the initial comment.
 
 A conversation typically will proceed with regards to your Pull
 Request. Project committers and potentially others will give you
@@ -129,20 +131,33 @@ done by squashing all of your commits into a single commit and then
 rebasing your changes into the master branch. Rebasing gives a linear
 commit history to the project.
 
-If the merge in complicated, it is possible that a committer may ask
+If the merge is complicated, it is possible that a committer may ask
 you to resolve any merge conflicts in your pull request. If any
 difficulties are experienced, a project committer will be more than
 happy to assist in the integration of your work into the project.
 
-After the Pull Request is closed, a comment can be added to the
-original JIRA issue referencing the Pull Request, and the issue can be
-resolved and closed.
+After the Pull Request is closed, the issue should be marked resolved
+and closed.
 
 
-Some core issues are documented in the [issues
-section](https://ibm.github.io/lagraph/#issues) of the LAGraph
-Documentation.
+## Documentation
 
-Any questions? Please feel free to contact @hornwp.
+Any help with documentation is greatly appreciated. LAGraph online
+documentation is generated from markdown using Jekyll. For more
+information, please see GitHub's [Using Jekyll with
+Pages](https://help.github.com/articles/using-jekyll-with-pages/).
 
-To view the result that github will render, under your project _Settings_, in the _GitHub Pages_ section for _Source_ select "master branch /docs folder"
+After installing Jekyll, Jekyll can be run from the `docs` folder via:
+
+	bundle exec jekyll serve
+
+This allows you to work on the documentation locally at http://127.0.0.1:4000.
+
+To preview your documentation updates on GitHub
+
+After working locally, you can view the result that github will
+render. To activate GitHub Pages, under your GitHub fork project
+_Settings_, in the _GitHub Pages_ section for _Source_ select "master
+branch /docs folder". After this is set github will generate the site
+at `https://YOUR_GITHUB_NAME.github.io/lagraph/` whenever you push
+documentation changes.
