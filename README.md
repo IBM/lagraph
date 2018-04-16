@@ -20,8 +20,47 @@ characteristics are:
 
 
 LAGraph is evolving, while several classical algorithms have been
-implemented on top of LAGraph, the completeness of interface has not
-been established.
+implemented on top of LAGraph, much work still needs to be done.
 
-The latest project documentation can be found at the [**LAGraph Documentation**](https://ibm.github.io/lagraph/) website on GitHub.
+## Coordinates
 
+For Sbt:
+```
+resolvers ++= Seq(
+
+   "sonatype-snaphots" at "https://oss.sonatype.org/content/repositories/snapshots"
+   )
+
+libraryDependencies += "com.github.ibm" %% "lagraph-core" % "0.1.0-SNAPSHOT"
+```
+
+For Maven:
+```
+<dependencies>
+    <dependency>
+        <groupId>com.ibm.github</groupId>
+        <artifactId>lagraph-core</artifactId>
+        <version>0.0.1-SNAPSHOT</version>
+    </dependency>
+</dependencies>
+
+<repositories>
+    <repository>
+        <id>sonatype-snapshots</id>
+        <name>Sonatype Public</name>
+        <url>https://oss.sonatype.org/content/repositories/snapshots/</url>
+        <snapshots>
+            <enabled>true</enabled>
+        </snapshots>
+    </repository>
+</repositories>
+```
+
+## Getting Started
+
+To get start visit [**LAGraph Documentation**](https://ibm.github.io/lagraph/).
+
+
+## Contributing
+
+Interested in contributing. Please visit [Contributing](CONTRIBUTING.md)
