@@ -11,7 +11,7 @@ License ...
 -->
 
 __Please note that LAGraph is still evolving and several challenges
-remain before it is ready for prime time.__
+remain before it is ready for production.__
 
 LAGraph is a Scala API for implementing graph algorithms expressed in
 the language of linear algebra.  The interface is written in Scala
@@ -19,12 +19,13 @@ using functional programming techniques and has implementations for
 both pure-Scala and Spark environments.  Scala permits an elegant
 expression of the semantics of semirings and Spark provides a
 distributed compute platform to achieve scale and performance.  The
-interface provides a concise, high-level abstraction that spares the
+interface provides a concise, high-level abstraction that hides the
 user from the details of the underlying implementation of the linear
-algebra operations.  This decoupling permits the implementation to
-focus on performance and scalability.  The decoupling also allows
-issues to be partitioned into those involving interface and those
-involving implementation.  Based on user feedback from our [Graph
+algebra operations.  This decoupling permits the user to focus on
+their algorithm and the implementation to focus on performance and
+scalability.
+
+Based on user feedback from our [Graph
 Algorithms Building Blocks
 (GABB’2017)](http://graphanalysis.org/workshop2017.html) workshop we
 are publishing an early release of LAGraph to facilitate a review of
@@ -32,6 +33,8 @@ goals and issues pertaining to both the interface and its
 implementation.
 
 ## Issues
+
+__TBD__ Make these issues GitHub issues and remove this section.
 
 1. **Minimal yet complete interface** The primary goal of the interface are the standards of "minimal yet
 complete".  To evaluate the interface we've [implemented a number of
@@ -41,20 +44,20 @@ minimality and completeness more algorithms need to be implemented.
 1. **Datasets**: The implementation is based on a novel adaptation of
 the Scalable Universal Matrix Multiplication Algorithm (SUMMA) to
 Spark RDD semantics. The implementation is currently performant when
-compared to GraphX.  However, to improve performance, it needs to be
-updated to exploit Spark Datasets.
+compared to GraphX.  However, there may be opportunities to reduce
+serialization costs (e.g., using Spark Datasets?).
 1. **Intra-task concurrency**: exploit intra-task concurrency afforded by specific computer architectures.
 1. **Unit test**: coverage needs improvement
 
 
 ## Quick Start
 
-This tutorial provides a quick introdution to how LAGraph can be used
+This tutorial provides a quick introduction to how LAGraph can be used
 to implement a linear algebra-based version of the
 [Bellman Ford algorithm](https://en.wikipedia.org/wiki/Bellman%E2%80%93Ford_algorithm):
 
 1. If you are not familiar with linear algebra-based formulations
-   (e.g., semiring-based formulations) of graph algrothims read
+   (e.g., semiring-based formulations) of graph algorithms read
    [Graphs and Big Data](graphs-overview).
 
 1. To understand how to express semirings using LAGraph read
