@@ -294,7 +294,8 @@ class GpiDstr(val nblockRequested: Int, val numv: Long, DEBUG: Boolean = false)
     val csrChunkClipL = this.clipStride.toLong
 
     // **
-    val full_map = rr.map {
+    // block coordinates
+    val blockedRdd = rr.map {
       case ((i, j), elem) => {
         val (rgin, cgin, rlin, clin) =
           ((i / chunk).toInt, (j / chunk).toInt, (i % chunk).toInt, (j % chunk).toInt)
@@ -306,7 +307,10 @@ class GpiDstr(val nblockRequested: Int, val numv: Long, DEBUG: Boolean = false)
           else (cgin, clin)
         ((rg, cg, rl, cl), elem)
       }
-    } // .cache()
+    }
+    blockedRdd.setName("blockedRdd")
+    // blockedRdd.cache()
+    // blockedRdd.count()
 
     // **
     implicit val csrOrdering = new Ordering[(Int, Int, Int, Int)] {
@@ -325,10 +329,15 @@ class GpiDstr(val nblockRequested: Int, val numv: Long, DEBUG: Boolean = false)
         }
       }
     }
-    val full_map_partitioned = full_map.repartitionAndSortWithinPartitions(
-      new GpiBlockMatrixPartitioner(clipN + 1)) // .cache()
-    //    full_map_partitioned.collect().foreach { case (k, v) => println(
-    //      "full_map_partitioned: k: (%s, %s, %s, %s) v: %s".format(k._1,k._2,k._3,k._4,v)) }
+    // the global sort
+    val blockedRdd_partitioned = blockedRdd.repartitionAndSortWithinPartitions(
+      new GpiBlockMatrixPartitioner(clipN + 1))
+    //    blockedRdd_partitioned.collect().foreach { case (k, v) => println(
+    //      "blockedRdd_partitioned: k: (%s, %s, %s, %s) v: %s".format(k._1,k._2,k._3,k._4,v)) }
+    blockedRdd_partitioned.setName("blockedRdd_partitioned")
+    // blockedRdd_partitioned.cache()
+    // blockedRdd_partitioned.count()
+
 
     // **
     def addArrays(
@@ -381,19 +390,21 @@ class GpiDstr(val nblockRequested: Int, val numv: Long, DEBUG: Boolean = false)
       }
     }
     // **
-    val mRdd_withNones =
-      full_map_partitioned.mapPartitionsWithIndex(addArrays, true).cache()
-    mRdd_withNones.setName("mRdd_withNones")
-    //    mRdd_withNones.collect().foreach { case (k, v) => println(
-    //      "mRdd_withNones: (%s,%s): %s".format(
+    val matrixRdd =
+      blockedRdd_partitioned.mapPartitionsWithIndex(addArrays, true)
+    matrixRdd.setName("matrixRdd")
+    // matrixRdd.cache()
+    // matrixRdd.count()
+    //    matrixRdd.collect().foreach { case (k, v) => println(
+    //      "matrixRdd: (%s,%s): %s".format(
     //        k._1, k._2, GpiSparseRowMatrix.toString(v.asInstanceOf[GpiBmatAdaptive[MS]].a))) }
 
     // create DstrBmat
-    val dstrBmatLoaded = GpiDstrBmat(this, mRdd_withNones, numv, numv, msSparse)
+    val dstrBmatLoaded = GpiDstrBmat(this, matrixRdd, numv, numv, msSparse)
 
     // obtain count and force checkpoint
     val t0 = System.nanoTime()
-    val nBlock = dstrBmatLoaded.matRdd.count()
+    val nBlock = dstrBmatLoaded.matRdd.cache().count()
     val t1 = System.nanoTime()
 
     // ****************
